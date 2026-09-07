@@ -1,317 +1,658 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>GuestConnect</title>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
+
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
+            min-height: 100vh;
             font-family: Arial, sans-serif;
-            background: #eef6ff;
-            color: #1f2937;
+            background: #eaf4ff;
+            color: #1a1a1a;
 
             display: flex;
             justify-content: center;
             align-items: center;
 
-            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 430px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 5px;
+        }
+
+        .brand {
+            margin: 0;
+            color: #0875e1;
+            font-size: 30px;
+        }
+
+        .tagline {
+            margin-top: 6px;
+            color: #667788;
+            font-size: 15px;
         }
 
         .card {
             background: white;
+            border-radius: 20px;
+            padding: 28px 24px;
 
-            width: 90%;
-            max-width: 430px;
-
-            padding: 35px 25px;
-
-            border-radius: 18px;
-
-            text-align: center;
-
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+            box-shadow: 0 8px 25px rgba(0, 100, 200, 0.12);
         }
 
-        .wifi-icon {
-            font-size: 55px;
-            margin-bottom: 10px;
-        }
-
-        h1 {
+        .restaurant-name {
             margin: 0;
-
-            color: #0d6efd;
-
-            font-size: 30px;
+            font-size: 27px;
+            text-align: center;
         }
 
         .location {
-            margin-top: 6px;
-
-            color: #64748b;
-
+            text-align: center;
+            color: #777;
+            margin: 7px 0 25px;
             font-size: 16px;
         }
 
-        .line {
-            height: 1px;
-
-            background: #e2e8f0;
-
-            margin: 25px 0;
+        .wifi-icon {
+            text-align: center;
+            font-size: 42px;
+            margin-bottom: 12px;
         }
 
-        .wifi-label {
-            font-size: 14px;
-
-            color: #64748b;
-
+        .label {
+            font-size: 13px;
+            color: #777;
             margin-bottom: 6px;
         }
 
-        .wifi-name {
-            font-size: 22px;
-
-            font-weight: bold;
-
-            margin-bottom: 20px;
-        }
-
-        .password-box {
-            background: #f1f5f9;
-
-            padding: 15px;
-
-            border-radius: 10px;
-
-            font-size: 20px;
-
-            font-weight: bold;
-
-            letter-spacing: 1px;
-
+        .wifi-box {
+            background: #f3f7fb;
+            border-radius: 12px;
+            padding: 14px;
             margin-bottom: 15px;
         }
 
-        button {
-            width: 100%;
+        .wifi-value {
+            font-size: 18px;
+            font-weight: bold;
+            word-break: break-word;
+        }
 
-            padding: 13px;
+        .password-row {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
 
+        .password-box {
+            flex: 1;
+            background: #f3f7fb;
+            border-radius: 12px;
+            padding: 14px;
+            min-width: 0;
+        }
+
+        .copy-button {
             border: none;
+            border-radius: 12px;
 
-            border-radius: 9px;
+            padding: 0 18px;
 
-            background: #0d6efd;
-
+            background: #0875e1;
             color: white;
 
-            font-size: 16px;
-
+            font-size: 15px;
             font-weight: bold;
 
             cursor: pointer;
         }
 
-        button:hover {
-            background: #0b5ed7;
+        .copy-button:active {
+            transform: scale(0.98);
+        }
+
+        .instructions {
+            margin-top: 22px;
+
+            background: #eef7ff;
+            border-radius: 12px;
+
+            padding: 15px;
+
+            color: #456;
+
+            font-size: 14px;
+            line-height: 1.5;
+
+            text-align: center;
         }
 
         .footer {
-            margin-top: 25px;
+            text-align: center;
+
+            color: #8899aa;
 
             font-size: 12px;
 
-            color: #94a3b8;
+            margin-top: 18px;
         }
 
-        .error {
-            color: #dc3545;
+        .message {
+            text-align: center;
+            padding: 30px 10px;
+        }
 
-            font-weight: bold;
+        .message-icon {
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
 
+        .message h2 {
+            margin: 0 0 8px;
+        }
+
+        .message p {
+            color: #667788;
             line-height: 1.5;
         }
+
+        .hidden {
+            display: none;
+        }
+
     </style>
+
 </head>
 
 
 <body>
 
-<div class="card">
+    <div class="container">
 
-    <div class="wifi-icon">
-        📶
-    </div>
+        <div class="header">
 
-    <h1 id="restaurantName">
-        GuestConnect
-    </h1>
-
-    <div
-        class="location"
-        id="locationName">
-    </div>
-
-
-    <div class="line"></div>
-
-
-    <div class="wifi-label">
-        Wi-Fi Network
-    </div>
-
-    <div
-        class="wifi-name"
-        id="wifiName">
-    </div>
-
-
-    <div class="wifi-label">
-        Wi-Fi Password
-    </div>
-
-    <div
-        class="password-box"
-        id="wifiPassword">
-    </div>
-
-
-    <button onclick="copyPassword()">
-        Copy Password
-    </button>
-
-
-    <div class="footer">
-        Powered by GuestConnect
-    </div>
-
-</div>
-
-
-<script>
-
-    // Get the restaurant ID from the URL
-    const urlParams = new URLSearchParams(
-        window.location.search
-    );
-
-    const restaurantID =
-        urlParams.get("id");
-
-
-    // Get restaurants saved by the Admin page
-    const restaurants =
-        JSON.parse(
-            localStorage.getItem(
-                "guestconnectRestaurants"
-            )
-        ) || [];
-
-
-    // Find the restaurant with the matching ID
-    const restaurant =
-        restaurants.find(
-            restaurant =>
-                restaurant.id === restaurantID
-        );
-
-
-    // If restaurant exists, display its information
-    if (restaurant) {
-
-        document.getElementById(
-            "restaurantName"
-        ).textContent =
-            restaurant.name;
-
-
-        document.getElementById(
-            "locationName"
-        ).textContent =
-            restaurant.location;
-
-
-        document.getElementById(
-            "wifiName"
-        ).textContent =
-            restaurant.wifiName;
-
-
-        document.getElementById(
-            "wifiPassword"
-        ).textContent =
-            restaurant.wifiPassword;
-
-    }
-
-
-    // If restaurant does not exist
-    else {
-
-        document.querySelector(
-            ".card"
-        ).innerHTML = `
-
-            <div class="wifi-icon">
+            <div class="logo">
                 📶
             </div>
 
-            <h1>
-                Restaurant Not Found
+            <h1 class="brand">
+                GuestConnect
             </h1>
 
-            <p class="error">
-                We could not find this restaurant.
-            </p>
-
-            <div class="footer">
-                Powered by GuestConnect
+            <div class="tagline">
+                Free Wi-Fi made easy
             </div>
 
-        `;
-
-    }
+        </div>
 
 
-    // Copy Wi-Fi password
-    function copyPassword() {
+        <div class="card">
 
-        if (!restaurant) {
-            return;
+            <!-- LOADING -->
+
+            <div id="loadingMessage" class="message">
+
+                <div class="message-icon">
+                    ⏳
+                </div>
+
+                <h2>
+                    Loading...
+                </h2>
+
+                <p>
+                    Please wait while we load the Wi-Fi details.
+                </p>
+
+            </div>
+
+
+            <!-- RESTAURANT INFORMATION -->
+
+            <div id="restaurantContent" class="hidden">
+
+                <div class="wifi-icon">
+                    📶
+                </div>
+
+
+                <h2
+                    id="restaurantName"
+                    class="restaurant-name">
+                </h2>
+
+
+                <div
+                    id="restaurantLocation"
+                    class="location">
+                </div>
+
+
+                <div class="label">
+                    Wi-Fi Network
+                </div>
+
+
+                <div class="wifi-box">
+
+                    <div
+                        id="wifiName"
+                        class="wifi-value">
+                    </div>
+
+                </div>
+
+
+                <div class="label">
+                    Wi-Fi Password
+                </div>
+
+
+                <div class="password-row">
+
+                    <div class="password-box">
+
+                        <div
+                            id="wifiPassword"
+                            class="wifi-value">
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        id="copyButton"
+                        class="copy-button"
+                        onclick="copyPassword()">
+
+                        Copy
+
+                    </button>
+
+                </div>
+
+
+                <div class="instructions">
+
+                    Connect your phone to the Wi-Fi network above
+                    using the password provided.
+
+                </div>
+
+            </div>
+
+
+            <!-- ERROR -->
+
+            <div
+                id="errorMessage"
+                class="message hidden">
+
+                <div class="message-icon">
+                    ⚠️
+                </div>
+
+                <h2>
+                    Restaurant Not Found
+                </h2>
+
+                <p id="errorText">
+                    We could not find the restaurant connected
+                    to this QR code.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer">
+
+            Powered by GuestConnect
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        // ============================================
+        // SUPABASE
+        // ============================================
+
+        const SUPABASE_URL =
+            "https://ksrsjhwklrwrfgzkqcbi.supabase.co";
+
+        const SUPABASE_PUBLISHABLE_KEY =
+            "sb_publishable_bLtm1wBIxmZvwLteiMA2tg_BtLHhgGc";
+
+
+        // Public customer page.
+        // Do not keep an admin login session here.
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY,
+                {
+                    auth: {
+                        persistSession: false,
+                        autoRefreshToken: false,
+                        detectSessionInUrl: false
+                    }
+                }
+            );
+
+
+        // ============================================
+        // GET RESTAURANT ID FROM URL
+        // ============================================
+
+        const urlParams =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const restaurantID =
+            urlParams.get("id");
+
+
+        // ============================================
+        // PAGE ELEMENTS
+        // ============================================
+
+        const loadingMessage =
+            document.getElementById(
+                "loadingMessage"
+            );
+
+        const restaurantContent =
+            document.getElementById(
+                "restaurantContent"
+            );
+
+        const errorMessage =
+            document.getElementById(
+                "errorMessage"
+            );
+
+        const errorText =
+            document.getElementById(
+                "errorText"
+            );
+
+        const restaurantName =
+            document.getElementById(
+                "restaurantName"
+            );
+
+        const restaurantLocation =
+            document.getElementById(
+                "restaurantLocation"
+            );
+
+        const wifiName =
+            document.getElementById(
+                "wifiName"
+            );
+
+        const wifiPassword =
+            document.getElementById(
+                "wifiPassword"
+            );
+
+        const copyButton =
+            document.getElementById(
+                "copyButton"
+            );
+
+
+        // ============================================
+        // SHOW ERROR
+        // ============================================
+
+        function showError(message) {
+
+            loadingMessage.classList.add(
+                "hidden"
+            );
+
+            restaurantContent.classList.add(
+                "hidden"
+            );
+
+            errorMessage.classList.remove(
+                "hidden"
+            );
+
+            errorText.textContent =
+                message;
+
         }
 
 
-        navigator.clipboard.writeText(
-            restaurant.wifiPassword
-        );
+        // ============================================
+        // RECORD VISIT
+        // ============================================
+
+        async function recordVisit() {
+
+            if (!restaurantID) {
+                return;
+            }
 
 
-        const button =
-            document.querySelector("button");
+            const { error } =
+                await supabaseClient
+                    .from("visits")
+                    .insert({
+                        restaurant_id:
+                            restaurantID
+                    });
 
 
-        button.textContent =
-            "Password Copied!";
+            if (error) {
+
+                console.error(
+                    "GuestConnect visit error:",
+                    error
+                );
+
+            } else {
+
+                console.log(
+                    "GuestConnect visit recorded."
+                );
+
+            }
+
+        }
 
 
-        setTimeout(() => {
+        // ============================================
+        // LOAD RESTAURANT
+        // ============================================
 
-            button.textContent =
-                "Copy Password";
+        async function loadRestaurant() {
 
-        }, 2000);
+            // Make sure the QR URL contains an ID
 
-    }
+            if (!restaurantID) {
 
-</script>
+                showError(
+                    "This QR code does not contain a restaurant ID."
+                );
+
+                return;
+
+            }
+
+
+            // Get restaurant from Supabase
+
+            const { data, error } =
+                await supabaseClient
+                    .from("restaurants")
+                    .select(
+                        "id, name, location, wifi_name, wifi_password"
+                    )
+                    .eq(
+                        "id",
+                        restaurantID
+                    )
+                    .maybeSingle();
+
+
+            // Database error
+
+            if (error) {
+
+                console.error(
+                    "GuestConnect restaurant error:",
+                    error
+                );
+
+                showError(
+                    "We could not load the restaurant information. Please try again."
+                );
+
+                return;
+
+            }
+
+
+            // Restaurant does not exist
+
+            if (!data) {
+
+                showError(
+                    "The restaurant connected to this QR code could not be found."
+                );
+
+                return;
+
+            }
+
+
+            // ========================================
+            // DISPLAY RESTAURANT
+            // ========================================
+
+            restaurantName.textContent =
+                data.name;
+
+            restaurantLocation.textContent =
+                data.location;
+
+            wifiName.textContent =
+                data.wifi_name;
+
+            wifiPassword.textContent =
+                data.wifi_password;
+
+
+            loadingMessage.classList.add(
+                "hidden"
+            );
+
+            errorMessage.classList.add(
+                "hidden"
+            );
+
+            restaurantContent.classList.remove(
+                "hidden"
+            );
+
+
+            // ========================================
+            // RECORD VISIT
+            // ========================================
+
+            await recordVisit();
+
+        }
+
+
+        // ============================================
+        // COPY PASSWORD
+        // ============================================
+
+        async function copyPassword() {
+
+            const password =
+                wifiPassword.textContent;
+
+
+            try {
+
+                await navigator.clipboard
+                    .writeText(password);
+
+
+                copyButton.textContent =
+                    "Copied!";
+
+
+                setTimeout(() => {
+
+                    copyButton.textContent =
+                        "Copy";
+
+                }, 2000);
+
+
+            } catch (error) {
+
+                console.error(
+                    "Could not copy password:",
+                    error
+                );
+
+
+                alert(
+                    "Could not copy automatically. Please copy the password manually."
+                );
+
+            }
+
+        }
+
+
+        // ============================================
+        // START
+        // ============================================
+
+        loadRestaurant();
+
+    </script>
 
 </body>
+
 </html>
