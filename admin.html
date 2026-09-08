@@ -1,2168 +1,2645 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>GuestConnect Admin</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f4f6f8;
-      color: #17202a;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* LOGIN */
-
-    #loginScreen {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      background: linear-gradient(135deg, #111827, #1f2937);
-    }
-
-    .login-card {
-      width: 100%;
-      max-width: 420px;
-      background: white;
-      padding: 32px;
-      border-radius: 18px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
-    }
-
-    .login-logo {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-
-    .login-logo h1 {
-      margin: 0;
-      font-size: 30px;
-    }
-
-    .login-logo p {
-      margin: 8px 0 0;
-      color: #6b7280;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 7px;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      outline: none;
-    }
-
-    .form-group input:focus {
-      border-color: #2563eb;
-    }
-
-    .primary-button {
-      width: 100%;
-      padding: 13px;
-      border: none;
-      border-radius: 10px;
-      background: #2563eb;
-      color: white;
-      font-weight: bold;
-    }
-
-    .primary-button:hover {
-      background: #1d4ed8;
-    }
-
-    .error-message {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 8px;
-      background: #fee2e2;
-      color: #991b1b;
-      font-size: 14px;
-    }
-
-    /* ADMIN */
-
-    #adminScreen {
-      min-height: 100vh;
-    }
-
-    .topbar {
-      background: #111827;
-      color: white;
-      padding: 15px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-    }
-
-    .topbar-left h1 {
-      margin: 0;
-      font-size: 23px;
-    }
-
-    .topbar-left p {
-      margin: 4px 0 0;
-      font-size: 13px;
-      color: #cbd5e1;
-    }
-
-    .logout-button {
-      border: 1px solid #475569;
-      background: transparent;
-      color: white;
-      padding: 9px 14px;
-      border-radius: 8px;
-    }
-
-    .logout-button:hover {
-      background: #1f2937;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 25px 18px 50px;
-    }
-
-    .section {
-      margin-bottom: 25px;
-    }
-
-    .section-title {
-      margin: 0 0 15px;
-      font-size: 22px;
-    }
-
-    /* STATS */
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-    }
-
-    .stat-card {
-      background: white;
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    }
-
-    .stat-label {
-      color: #6b7280;
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .stat-number {
-      font-size: 28px;
-      font-weight: bold;
-    }
-
-    /* ADD FORM */
-
-    .add-card {
-      background: white;
-      padding: 20px;
-      border-radius: 14px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    }
-
-    .add-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
-
-    .add-grid .full {
-      grid-column: 1 / -1;
-    }
-
-    .add-card input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 9px;
-    }
-
-    .add-button {
-      margin-top: 15px;
-      background: #16a34a;
-      color: white;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 9px;
-      font-weight: bold;
-    }
-
-    .add-button:hover {
-      background: #15803d;
-    }
-
-    /* RESTAURANTS */
-
-    .restaurant-list {
-      display: grid;
-      gap: 15px;
-    }
-
-    .restaurant-card {
-      background: white;
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    }
-
-    .restaurant-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-
-    .restaurant-name {
-      margin: 0;
-      font-size: 21px;
-    }
-
-    .restaurant-location {
-      margin: 5px 0 0;
-      color: #6b7280;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      background: #dcfce7;
-      color: #166534;
-      white-space: nowrap;
-    }
-
-    .status-badge.warning {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .restaurant-details {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .detail-box {
-      background: #f8fafc;
-      padding: 12px;
-      border-radius: 9px;
-    }
-
-    .detail-label {
-      font-size: 12px;
-      color: #64748b;
-      margin-bottom: 5px;
-    }
-
-    .detail-value {
-      font-weight: bold;
-      word-break: break-word;
-    }
-
-    .restaurant-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .action-button {
-      border: none;
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 13px;
-    }
-
-    .open-button {
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
-
-    .qr-button {
-      background: #ede9fe;
-      color: #6d28d9;
-    }
-
-    .edit-button {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .delete-button {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-
-    .action-button:hover {
-      filter: brightness(0.95);
-    }
-
-    /* EDIT */
-
-    .edit-box {
-      margin-top: 15px;
-      padding: 15px;
-      background: #f8fafc;
-      border-radius: 10px;
-    }
-
-    .edit-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .edit-grid input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-    }
-
-    .edit-actions {
-      margin-top: 12px;
-      display: flex;
-      gap: 8px;
-    }
-
-    .save-button {
-      background: #16a34a;
-      color: white;
-      border: none;
-      padding: 9px 14px;
-      border-radius: 8px;
-      font-weight: bold;
-    }
-
-    .cancel-button {
-      background: #e5e7eb;
-      color: #374151;
-      border: none;
-      padding: 9px 14px;
-      border-radius: 8px;
-    }
-
-    /* QR MODAL */
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.65);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 1000;
-    }
-
-    .modal-card {
-      width: 100%;
-      max-width: 420px;
-      background: white;
-      border-radius: 18px;
-      padding: 25px;
-      text-align: center;
-    }
-
-    .modal-card h2 {
-      margin-top: 0;
-    }
-
-    #qrCode {
-      display: flex;
-      justify-content: center;
-      margin: 20px 0;
-    }
-
-    #qrCode img,
-    #qrCode canvas {
-      max-width: 100%;
-    }
-
-    .qr-url {
-      font-size: 12px;
-      color: #64748b;
-      word-break: break-all;
-      background: #f8fafc;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .download-button {
-      flex: 1;
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 11px;
-      border-radius: 9px;
-      font-weight: bold;
-    }
-
-    .close-button {
-      flex: 1;
-      background: #e5e7eb;
-      color: #374151;
-      border: none;
-      padding: 11px;
-      border-radius: 9px;
-      font-weight: bold;
-    }
-
-    .message {
-      padding: 12px;
-      border-radius: 9px;
-      margin-bottom: 15px;
-      font-size: 14px;
-    }
-
-    .success-message {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .info-message {
-      background: #dbeafe;
-      color: #1e40af;
-    }
-
-    .empty-message {
-      background: white;
-      padding: 25px;
-      border-radius: 14px;
-      text-align: center;
-      color: #64748b;
-    }
-
-    /* MOBILE */
-
-    @media (max-width: 900px) {
-      .stats-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    @media (max-width: 650px) {
-      .topbar {
-        align-items: flex-start;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .add-grid,
-      .edit-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .add-grid .full {
-        grid-column: auto;
-      }
-
-      .restaurant-details {
-        grid-template-columns: 1fr;
-      }
-
-      .restaurant-header {
-        flex-direction: column;
-      }
-
-      .restaurant-actions {
-        flex-direction: column;
-      }
-
-      .action-button {
-        width: 100%;
-      }
-    }
-
-    @media (max-width: 400px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .login-card {
-        padding: 22px;
-      }
-    }
-  </style>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>GuestConnect Admin</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            background: #f3f4f6;
+
+            color: #1f2937;
+
+        }
+
+
+        .top {
+
+            background: #111827;
+
+            color: white;
+
+            padding: 20px;
+
+        }
+
+
+        .top-inner {
+
+            max-width: 1100px;
+
+            margin: auto;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+
+        .logo {
+
+            font-size: 25px;
+
+            font-weight: bold;
+
+        }
+
+
+        .admin-label {
+
+            font-size: 13px;
+
+            opacity: 0.75;
+
+            margin-top: 3px;
+
+        }
+
+
+        .logout-button {
+
+            background: #374151;
+
+            color: white;
+
+            border: none;
+
+            padding: 10px 15px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+        }
+
+
+        .container {
+
+            max-width: 1100px;
+
+            margin: 25px auto;
+
+            padding: 0 16px;
+
+        }
+
+
+        .login-card {
+
+            max-width: 420px;
+
+            margin: 70px auto;
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 18px;
+
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+
+        }
+
+
+        .login-card h1 {
+
+            margin-top: 0;
+
+            text-align: center;
+
+        }
+
+
+        .login-card p {
+
+            text-align: center;
+
+            color: #6b7280;
+
+        }
+
+
+        input {
+
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 9px;
+
+            font-size: 15px;
+
+            margin-top: 6px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        label {
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+        }
+
+
+        .primary-button {
+
+            width: 100%;
+
+            background: #111827;
+
+            color: white;
+
+            border: none;
+
+            padding: 13px;
+
+            border-radius: 10px;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        .message {
+
+            margin-top: 15px;
+
+            text-align: center;
+
+            color: #b91c1c;
+
+            font-size: 14px;
+
+        }
+
+
+        .section {
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .section-title {
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .stats-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(5, 1fr);
+
+            gap: 12px;
+
+        }
+
+
+        .stat-card {
+
+            background: white;
+
+            padding: 18px;
+
+            border-radius: 14px;
+
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+
+        }
+
+
+        .stat-label {
+
+            color: #6b7280;
+
+            font-size: 13px;
+
+        }
+
+
+        .stat-number {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            margin-top: 6px;
+
+        }
+
+
+        .restaurant-card {
+
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 20px;
+
+            margin-bottom: 15px;
+
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+
+        }
+
+
+        .restaurant-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 15px;
+
+        }
+
+
+        .restaurant-name {
+
+            font-size: 21px;
+
+            font-weight: bold;
+
+        }
+
+
+        .restaurant-location {
+
+            color: #6b7280;
+
+            margin-top: 4px;
+
+        }
+
+
+        .visit-number {
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+            text-align: right;
+
+        }
+
+
+        .visit-label {
+
+            font-size: 12px;
+
+            color: #6b7280;
+
+        }
+
+
+        .today-warning {
+
+            display: inline-block;
+
+            margin-top: 8px;
+
+            background: #fee2e2;
+
+            color: #991b1b;
+
+            padding: 5px 9px;
+
+            border-radius: 7px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+        }
+
+
+        .restaurant-details {
+
+            margin-top: 18px;
+
+            padding: 15px;
+
+            background: #f9fafb;
+
+            border-radius: 12px;
+
+        }
+
+
+        .detail-row {
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .detail-row:last-child {
+
+            margin-bottom: 0;
+
+        }
+
+
+        .detail-label {
+
+            font-size: 12px;
+
+            color: #6b7280;
+
+        }
+
+
+        .detail-value {
+
+            font-weight: bold;
+
+            word-break: break-word;
+
+        }
+
+
+        .actions {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-top: 18px;
+
+        }
+
+
+        .action-button {
+
+            border: none;
+
+            padding: 10px 13px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+            font-size: 13px;
+
+        }
+
+
+        .open-button {
+
+            background: #e0e7ff;
+
+            color: #3730a3;
+
+        }
+
+
+        .qr-button {
+
+            background: #dcfce7;
+
+            color: #166534;
+
+        }
+
+
+        .edit-button {
+
+            background: #fef3c7;
+
+            color: #92400e;
+
+        }
+
+
+        .delete-button {
+
+            background: #fee2e2;
+
+            color: #991b1b;
+
+        }
+
+
+        .regenerate-button {
+
+            background: #ede9fe;
+
+            color: #5b21b6;
+
+        }
+
+
+        .add-card {
+
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 16px;
+
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+
+        }
+
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 15px;
+
+        }
+
+
+        .full {
+
+            grid-column: 1 / -1;
+
+        }
+
+
+        .add-button {
+
+            background: #111827;
+
+            color: white;
+
+            border: none;
+
+            padding: 12px 18px;
+
+            border-radius: 9px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        .empty {
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 16px;
+
+            text-align: center;
+
+            color: #6b7280;
+
+        }
+
+
+        #dashboard {
+
+            display: none;
+
+        }
+
+
+        #qrModal {
+
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0,0,0,0.65);
+
+            z-index: 1000;
+
+            padding: 20px;
+
+        }
+
+
+        .qr-box {
+
+            max-width: 420px;
+
+            margin: 50px auto;
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 25px;
+
+            text-align: center;
+
+        }
+
+
+        #qrcode {
+
+            display: flex;
+
+            justify-content: center;
+
+            margin: 20px 0;
+
+        }
+
+
+        .qr-url {
+
+            background: #f3f4f6;
+
+            padding: 12px;
+
+            border-radius: 9px;
+
+            font-size: 12px;
+
+            word-break: break-all;
+
+            text-align: left;
+
+        }
+
+
+        .modal-buttons {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 15px;
+
+        }
+
+
+        .modal-buttons button {
+
+            flex: 1;
+
+        }
+
+
+        .close-button {
+
+            background: #e5e7eb;
+
+            color: #111827;
+
+        }
+
+
+        .download-button {
+
+            background: #111827;
+
+            color: white;
+
+        }
+
+
+        @media (max-width: 800px) {
+
+            .stats-grid {
+
+                grid-template-columns: repeat(2, 1fr);
+
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .top-inner {
+
+                align-items: flex-start;
+
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .full {
+
+                grid-column: auto;
+
+            }
+
+
+            .restaurant-header {
+
+                flex-direction: column;
+
+            }
+
+
+            .visit-number {
+
+                text-align: left;
+
+            }
+
+        }
+
+
+        @media (max-width: 400px) {
+
+            .stats-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
 </head>
+
+
 
 <body>
 
-  <!-- LOGIN SCREEN -->
 
-  <div id="loginScreen">
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<div id="loginScreen">
+
 
     <div class="login-card">
 
-      <div class="login-logo">
-        <h1>GuestConnect</h1>
-        <p>Admin Dashboard</p>
-      </div>
+        <h1>
+            GuestConnect
+        </h1>
 
-      <form id="loginForm">
+        <p>
+            Admin Dashboard
+        </p>
 
-        <div class="form-group">
-          <label for="loginEmail">Email</label>
-          <input
+
+        <label>
+            Email
+        </label>
+
+        <input
+            id="email"
             type="email"
-            id="loginEmail"
-            placeholder="Admin email"
-            required
-          >
-        </div>
+            placeholder="Admin email">
 
-        <div class="form-group">
-          <label for="loginPassword">Password</label>
-          <input
+
+        <label>
+            Password
+        </label>
+
+        <input
+            id="password"
             type="password"
-            id="loginPassword"
-            placeholder="Password"
-            required
-          >
-        </div>
+            placeholder="Password">
 
-        <button class="primary-button" type="submit">
-          Login
+
+        <button
+            class="primary-button"
+            onclick="login()">
+
+            Login
+
         </button>
 
-      </form>
 
-      <div id="loginError" class="error-message hidden"></div>
-
-    </div>
-
-  </div>
-
-
-  <!-- ADMIN SCREEN -->
-
-  <div id="adminScreen" class="hidden">
-
-    <div class="topbar">
-
-      <div class="topbar-left">
-        <h1>GuestConnect Admin</h1>
-        <p>Restaurant & Wi-Fi management</p>
-      </div>
-
-      <button id="logoutButton" class="logout-button">
-        Logout
-      </button>
-
-    </div>
-
-
-    <main class="container">
-
-      <!-- MESSAGE -->
-
-      <div id="adminMessage" class="message hidden"></div>
-
-
-      <!-- STATS -->
-
-      <section class="section">
-
-        <h2 class="section-title">
-          Overall Statistics
-        </h2>
-
-        <div class="stats-grid">
-
-          <div class="stat-card">
-            <div class="stat-label">Today</div>
-            <div id="statToday" class="stat-number">0</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-label">Last 7 Days</div>
-            <div id="stat7Days" class="stat-number">0</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-label">Last 30 Days</div>
-            <div id="stat30Days" class="stat-number">0</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-label">This Year</div>
-            <div id="statYear" class="stat-number">0</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-label">All Time</div>
-            <div id="statAllTime" class="stat-number">0</div>
-          </div>
-
+        <div
+            id="loginMessage"
+            class="message">
         </div>
 
-      </section>
+    </div>
 
 
-      <!-- ADD RESTAURANT -->
-
-      <section class="section">
-
-        <h2 class="section-title">
-          Add Restaurant
-        </h2>
-
-        <div class="add-card">
-
-          <form id="addRestaurantForm">
-
-            <div class="add-grid">
-
-              <div>
-                <label for="restaurantId">
-                  Restaurant ID
-                </label>
-
-                <input
-                  type="text"
-                  id="restaurantId"
-                  placeholder="e.g. wimpy-kimberley"
-                  required
-                >
-              </div>
+</div>
 
 
-              <div>
-                <label for="restaurantName">
-                  Restaurant Name
-                </label>
 
-                <input
-                  type="text"
-                  id="restaurantName"
-                  placeholder="e.g. Wimpy"
-                  required
-                >
-              </div>
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<div id="dashboard">
 
 
-              <div>
-                <label for="restaurantLocation">
-                  Location
-                </label>
+    <div class="top">
 
-                <input
-                  type="text"
-                  id="restaurantLocation"
-                  placeholder="e.g. Kimberley"
-                  required
-                >
-              </div>
+        <div class="top-inner">
 
+            <div>
 
-              <div>
-                <label for="restaurantWifiName">
-                  Wi-Fi Name
-                </label>
+                <div class="logo">
+                    GuestConnect
+                </div>
 
-                <input
-                  type="text"
-                  id="restaurantWifiName"
-                  placeholder="e.g. WIMPY-GUEST"
-                  required
-                >
-              </div>
-
-
-              <div class="full">
-
-                <label for="restaurantWifiPassword">
-                  Wi-Fi Password
-                </label>
-
-                <input
-                  type="text"
-                  id="restaurantWifiPassword"
-                  placeholder="Wi-Fi password"
-                  required
-                >
-
-              </div>
+                <div class="admin-label">
+                    Admin Dashboard
+                </div>
 
             </div>
 
-            <button class="add-button" type="submit">
-              + Add Restaurant
+
+            <button
+                class="logout-button"
+                onclick="logout()">
+
+                Logout
+
             </button>
 
-          </form>
-
         </div>
-
-      </section>
-
-
-      <!-- RESTAURANTS -->
-
-      <section class="section">
-
-        <h2 class="section-title">
-          Restaurants
-        </h2>
-
-        <div id="restaurantList" class="restaurant-list">
-        </div>
-
-      </section>
-
-    </main>
-
-  </div>
-
-
-  <!-- QR MODAL -->
-
-  <div id="qrModal" class="modal hidden">
-
-    <div class="modal-card">
-
-      <h2 id="qrTitle">
-        Restaurant QR Code
-      </h2>
-
-      <div id="qrCode"></div>
-
-      <div id="qrUrl" class="qr-url"></div>
-
-      <div class="modal-actions">
-
-        <button
-          id="downloadQrButton"
-          class="download-button"
-        >
-          Download QR
-        </button>
-
-        <button
-          id="closeQrButton"
-          class="close-button"
-        >
-          Close
-        </button>
-
-      </div>
 
     </div>
 
-  </div>
 
 
-  <script>
+    <div class="container">
 
-    /* =========================================
-       SUPABASE
-    ========================================= */
 
-    const SUPABASE_URL =
-      "https://ksrsjhwklrwrfgzkqcbi.supabase.co";
+        <!-- =================================================
+             STATS
+        ================================================= -->
 
-    const SUPABASE_PUBLISHABLE_KEY =
-      "sb_publishable_bLtm1wBIxmZvwLteiMA2tg_BtLHhgGc";
+        <div class="section">
 
-    const supabaseClient =
-      window.supabase.createClient(
+            <div class="section-title">
+                Overall Visits
+            </div>
+
+
+            <div class="stats-grid">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        Today
+                    </div>
+
+                    <div
+                        id="todayCount"
+                        class="stat-number">
+
+                        0
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        Last 7 Days
+                    </div>
+
+                    <div
+                        id="sevenDayCount"
+                        class="stat-number">
+
+                        0
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        Last 30 Days
+                    </div>
+
+                    <div
+                        id="thirtyDayCount"
+                        class="stat-number">
+
+                        0
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        This Year
+                    </div>
+
+                    <div
+                        id="yearCount"
+                        class="stat-number">
+
+                        0
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        All Time
+                    </div>
+
+                    <div
+                        id="allTimeCount"
+                        class="stat-number">
+
+                        0
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             ADD RESTAURANT
+        ================================================= -->
+
+        <div class="section">
+
+            <div class="section-title">
+                Add Restaurant
+            </div>
+
+
+            <div class="add-card">
+
+
+                <div class="form-grid">
+
+
+                    <div>
+
+                        <label>
+                            Restaurant name
+                        </label>
+
+                        <input
+                            id="newName"
+                            type="text"
+                            placeholder="Wimpy">
+
+                    </div>
+
+
+                    <div>
+
+                        <label>
+                            Location
+                        </label>
+
+                        <input
+                            id="newLocation"
+                            type="text"
+                            placeholder="Kimberley">
+
+                    </div>
+
+
+                    <div>
+
+                        <label>
+                            Restaurant ID
+                        </label>
+
+                        <input
+                            id="newID"
+                            type="text"
+                            placeholder="wimpy-kimberley">
+
+                    </div>
+
+
+                    <div>
+
+                        <label>
+                            Wi-Fi name
+                        </label>
+
+                        <input
+                            id="newWifiName"
+                            type="text"
+                            placeholder="WIMPY-GUEST">
+
+                    </div>
+
+
+                    <div>
+
+                        <label>
+                            Wi-Fi password
+                        </label>
+
+                        <input
+                            id="newWifiPassword"
+                            type="text"
+                            placeholder="12345678">
+
+                    </div>
+
+
+                    <div class="full">
+
+                        <button
+                            class="add-button"
+                            onclick="addRestaurant()">
+
+                            Add Restaurant
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+
+                <div
+                    id="addMessage"
+                    class="message">
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             RESTAURANTS
+        ================================================= -->
+
+        <div class="section">
+
+            <div class="section-title">
+                Restaurants
+            </div>
+
+
+            <div id="restaurantList">
+
+                Loading restaurants...
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     QR MODAL
+===================================================== -->
+
+<div id="qrModal">
+
+
+    <div class="qr-box">
+
+
+        <h2 id="qrTitle">
+            Restaurant QR Code
+        </h2>
+
+
+        <div id="qrcode"></div>
+
+
+        <div
+            id="qrUrl"
+            class="qr-url">
+        </div>
+
+
+        <div class="modal-buttons">
+
+
+            <button
+                class="action-button close-button"
+                onclick="closeQR()">
+
+                Close
+
+            </button>
+
+
+            <button
+                class="action-button download-button"
+                onclick="downloadQR()">
+
+                Download QR
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+// =====================================================
+// SUPABASE
+// =====================================================
+
+const SUPABASE_URL =
+    "https://ksrsjhwklrwrfgzkqcbi.supabase.co";
+
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_bLtm1wBIxmZvwLteiMA2tg_BtLHhgGc";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+
         SUPABASE_URL,
+
         SUPABASE_PUBLISHABLE_KEY
-      );
 
-
-    /* =========================================
-       GLOBAL VARIABLES
-    ========================================= */
-
-    let restaurants = [];
-    let visits = [];
-
-    let currentQrUrl = "";
-    let currentQrRestaurantName = "";
-
-
-    /* =========================================
-       ELEMENTS
-    ========================================= */
-
-    const loginScreen =
-      document.getElementById("loginScreen");
-
-    const adminScreen =
-      document.getElementById("adminScreen");
-
-    const loginForm =
-      document.getElementById("loginForm");
-
-    const loginError =
-      document.getElementById("loginError");
-
-    const logoutButton =
-      document.getElementById("logoutButton");
-
-    const restaurantList =
-      document.getElementById("restaurantList");
-
-    const addRestaurantForm =
-      document.getElementById("addRestaurantForm");
-
-    const adminMessage =
-      document.getElementById("adminMessage");
-
-    const qrModal =
-      document.getElementById("qrModal");
-
-    const qrCode =
-      document.getElementById("qrCode");
-
-    const qrTitle =
-      document.getElementById("qrTitle");
-
-    const qrUrl =
-      document.getElementById("qrUrl");
-
-    const downloadQrButton =
-      document.getElementById("downloadQrButton");
-
-    const closeQrButton =
-      document.getElementById("closeQrButton");
-
-
-    /* =========================================
-       START
-    ========================================= */
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      initialize
     );
 
 
-    async function initialize() {
 
-      const {
-        data: {
-          user
-        }
-      } = await supabaseClient.auth.getUser();
+// =====================================================
+// VARIABLES
+// =====================================================
 
-      if (user) {
+let currentQRRestaurant = null;
 
-        showAdmin();
+let restaurantData = [];
 
-      } else {
-
-        showLogin();
-
-      }
-
-    }
+let visitData = [];
 
 
-    /* =========================================
-       LOGIN
-    ========================================= */
 
-    loginForm.addEventListener(
-      "submit",
-      async function(event) {
+// =====================================================
+// LOGIN
+// =====================================================
 
-        event.preventDefault();
+async function login() {
 
-        loginError.classList.add("hidden");
 
-        const email =
-          document.getElementById("loginEmail")
-            .value
-            .trim();
+    const email =
+        document.getElementById(
+            "email"
+        ).value.trim();
 
-        const password =
-          document.getElementById("loginPassword")
-            .value;
 
-        const {
-          error
-        } =
-          await supabaseClient.auth.signInWithPassword({
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+
+    const message =
+        document.getElementById(
+            "loginMessage"
+        );
+
+
+    message.textContent = "Logging in...";
+
+
+    const { data, error } =
+
+        await supabaseClient.auth.signInWithPassword({
+
             email: email,
+
             password: password
-          });
 
-        if (error) {
+        });
 
-          loginError.textContent =
+
+    if (error) {
+
+        console.error(
+            "Login error:",
+            error
+        );
+
+
+        message.textContent =
             error.message;
 
-          loginError.classList.remove("hidden");
 
-          return;
-        }
+        return;
 
-        showAdmin();
+    }
 
-      }
+
+    message.textContent = "";
+
+
+    showDashboard();
+
+}
+
+
+
+// =====================================================
+// LOGOUT
+// =====================================================
+
+async function logout() {
+
+
+    await supabaseClient.auth.signOut();
+
+
+    document.getElementById(
+        "dashboard"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "loginScreen"
+    ).style.display =
+        "block";
+
+}
+
+
+
+// =====================================================
+// CHECK LOGIN
+// =====================================================
+
+async function checkLogin() {
+
+
+    const { data } =
+        await supabaseClient.auth.getUser();
+
+
+    if (data && data.user) {
+
+        showDashboard();
+
+    }
+
+}
+
+
+
+// =====================================================
+// SHOW DASHBOARD
+// =====================================================
+
+async function showDashboard() {
+
+
+    document.getElementById(
+        "loginScreen"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "dashboard"
+    ).style.display =
+        "block";
+
+
+    await loadDashboard();
+
+}
+
+
+
+// =====================================================
+// LOAD DASHBOARD
+// =====================================================
+
+async function loadDashboard() {
+
+
+    await loadRestaurants();
+
+    await loadVisits();
+
+    renderRestaurants();
+
+    renderStats();
+
+}
+
+
+
+// =====================================================
+// LOAD RESTAURANTS
+// =====================================================
+
+async function loadRestaurants() {
+
+
+    const { data, error } =
+
+        await supabaseClient
+
+            .from("restaurants")
+
+            .select(
+                "id, name, location, wifi_name, wifi_password, public_token, created_at"
+            )
+
+            .order(
+                "name",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Restaurant loading error:",
+            error
+        );
+
+
+        document.getElementById(
+            "restaurantList"
+        ).innerHTML =
+
+            `<div class="empty">
+                Could not load restaurants.<br><br>
+                ${escapeHTML(error.message)}
+            </div>`;
+
+
+        return;
+
+    }
+
+
+    restaurantData =
+        data || [];
+
+}
+
+
+
+// =====================================================
+// LOAD VISITS
+// =====================================================
+
+async function loadVisits() {
+
+
+    const { data, error } =
+
+        await supabaseClient
+
+            .from("visits")
+
+            .select(
+                "id, restaurant_id, visited_at"
+            )
+
+            .order(
+                "visited_at",
+                {
+                    ascending: false
+                }
+            )
+
+            .range(
+                0,
+                9999
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Visit loading error:",
+            error
+        );
+
+
+        visitData = [];
+
+        return;
+
+    }
+
+
+    visitData =
+        data || [];
+
+}
+
+
+
+// =====================================================
+// DATE HELPERS
+// =====================================================
+
+function startOfToday() {
+
+
+    const d =
+        new Date();
+
+
+    d.setHours(
+        0,
+        0,
+        0,
+        0
     );
 
 
-    /* =========================================
-       SHOW LOGIN
-    ========================================= */
+    return d;
 
-    function showLogin() {
-
-      loginScreen.classList.remove("hidden");
-      adminScreen.classList.add("hidden");
-
-    }
+}
 
 
-    /* =========================================
-       SHOW ADMIN
-    ========================================= */
 
-    async function showAdmin() {
-
-      loginScreen.classList.add("hidden");
-      adminScreen.classList.remove("hidden");
-
-      await loadDashboard();
-
-    }
+function startOfSevenDays() {
 
 
-    /* =========================================
-       LOGOUT
-    ========================================= */
+    const d =
+        new Date();
 
-    logoutButton.addEventListener(
-      "click",
-      async function() {
 
-        await supabaseClient.auth.signOut();
-
-        restaurants = [];
-        visits = [];
-
-        showLogin();
-
-      }
+    d.setDate(
+        d.getDate() - 6
     );
 
 
-    /* =========================================
-       LOAD DASHBOARD
-    ========================================= */
-
-    async function loadDashboard() {
-
-      showMessage(
-        "Loading dashboard...",
-        "info"
-      );
-
-      const [
-        restaurantResult,
-        visitResult
-      ] = await Promise.all([
-
-        supabaseClient
-          .from("restaurants")
-          .select(
-            "id, name, location, wifi_name, wifi_password, created_at"
-          )
-          .order("created_at", {
-            ascending: true
-          }),
-
-        supabaseClient
-          .from("visits")
-          .select(
-            "id, restaurant_id, visited_at"
-          )
-          .order("visited_at", {
-            ascending: false
-          })
-          .range(0, 9999)
-
-      ]);
+    d.setHours(
+        0,
+        0,
+        0,
+        0
+    );
 
 
-      if (restaurantResult.error) {
+    return d;
 
-        showMessage(
-          "Could not load restaurants: " +
-          restaurantResult.error.message,
-          "error"
+}
+
+
+
+function startOfThirtyDays() {
+
+
+    const d =
+        new Date();
+
+
+    d.setDate(
+        d.getDate() - 29
+    );
+
+
+    d.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    return d;
+
+}
+
+
+
+function startOfYear() {
+
+
+    const d =
+        new Date(
+            new Date().getFullYear(),
+            0,
+            1
         );
 
-        return;
-      }
+
+    return d;
+
+}
 
 
-      if (visitResult.error) {
 
-        showMessage(
-          "Could not load visits: " +
-          visitResult.error.message,
-          "error"
-        );
+// =====================================================
+// RENDER STATS
+// =====================================================
 
-        return;
-      }
+function renderStats() {
 
 
-      restaurants =
-        restaurantResult.data || [];
-
-      visits =
-        visitResult.data || [];
+    const today =
+        startOfToday();
 
 
-      updateOverallStats();
-
-      renderRestaurants();
-
-      hideMessage();
-
-    }
+    const seven =
+        startOfSevenDays();
 
 
-    /* =========================================
-       DATE HELPERS
-    ========================================= */
-
-    function getStartOfToday() {
-
-      const date = new Date();
-
-      date.setHours(0, 0, 0, 0);
-
-      return date;
-
-    }
+    const thirty =
+        startOfThirtyDays();
 
 
-    function getStartOfYear() {
-
-      const date = new Date();
-
-      date.setMonth(0, 1);
-      date.setHours(0, 0, 0, 0);
-
-      return date;
-
-    }
+    const year =
+        startOfYear();
 
 
-    function getDaysAgo(days) {
+    let todayCount = 0;
 
-      const date = new Date();
+    let sevenCount = 0;
 
-      date.setDate(
-        date.getDate() - days
-      );
+    let thirtyCount = 0;
 
-      return date;
-
-    }
+    let yearCount = 0;
 
 
-    function countVisitsSince(date) {
-
-      return visits.filter(
+    visitData.forEach(
         function(visit) {
 
-          return new Date(
-            visit.visited_at
-          ) >= date;
+
+            const date =
+                new Date(
+                    visit.visited_at
+                );
+
+
+            if (date >= today) {
+
+                todayCount++;
+
+            }
+
+
+            if (date >= seven) {
+
+                sevenCount++;
+
+            }
+
+
+            if (date >= thirty) {
+
+                thirtyCount++;
+
+            }
+
+
+            if (date >= year) {
+
+                yearCount++;
+
+            }
 
         }
-      ).length;
-
-    }
+    );
 
 
-    /* =========================================
-       OVERALL STATS
-    ========================================= */
+    document.getElementById(
+        "todayCount"
+    ).textContent =
+        todayCount;
 
-    function updateOverallStats() {
 
-      const today =
-        countVisitsSince(
-          getStartOfToday()
+    document.getElementById(
+        "sevenDayCount"
+    ).textContent =
+        sevenCount;
+
+
+    document.getElementById(
+        "thirtyDayCount"
+    ).textContent =
+        thirtyCount;
+
+
+    document.getElementById(
+        "yearCount"
+    ).textContent =
+        yearCount;
+
+
+    document.getElementById(
+        "allTimeCount"
+    ).textContent =
+        visitData.length;
+
+}
+
+
+
+// =====================================================
+// RESTAURANT VISIT COUNT
+// =====================================================
+
+function getRestaurantVisits(id) {
+
+
+    return visitData.filter(
+
+        function(visit) {
+
+            return visit.restaurant_id === id;
+
+        }
+
+    );
+
+}
+
+
+
+// =====================================================
+// TODAY VISITS
+// =====================================================
+
+function getTodayRestaurantVisits(id) {
+
+
+    const today =
+        startOfToday();
+
+
+    return visitData.filter(
+
+        function(visit) {
+
+            return (
+
+                visit.restaurant_id === id &&
+
+                new Date(
+                    visit.visited_at
+                ) >= today
+
+            );
+
+        }
+
+    );
+
+}
+
+
+
+// =====================================================
+// RENDER RESTAURANTS
+// =====================================================
+
+function renderRestaurants() {
+
+
+    const container =
+        document.getElementById(
+            "restaurantList"
         );
 
-      const sevenDays =
-        countVisitsSince(
-          getDaysAgo(7)
-        );
 
-      const thirtyDays =
-        countVisitsSince(
-          getDaysAgo(30)
-        );
-
-      const year =
-        countVisitsSince(
-          getStartOfYear()
-        );
-
-      const allTime =
-        visits.length;
-
-
-      document.getElementById(
-        "statToday"
-      ).textContent = today;
-
-
-      document.getElementById(
-        "stat7Days"
-      ).textContent = sevenDays;
-
-
-      document.getElementById(
-        "stat30Days"
-      ).textContent = thirtyDays;
-
-
-      document.getElementById(
-        "statYear"
-      ).textContent = year;
-
-
-      document.getElementById(
-        "statAllTime"
-      ).textContent = allTime;
-
-    }
-
-
-    /* =========================================
-       RESTAURANT VISITS
-    ========================================= */
-
-    function getRestaurantVisits(
-      restaurantId
+    if (
+        !restaurantData ||
+        restaurantData.length === 0
     ) {
 
-      return visits.filter(
-        function(visit) {
+        container.innerHTML =
 
-          return visit.restaurant_id ===
-            restaurantId;
-
-        }
-      );
-
-    }
-
-
-    function getRestaurantVisitCount(
-      restaurantId,
-      startDate = null
-    ) {
-
-      return visits.filter(
-        function(visit) {
-
-          if (
-            visit.restaurant_id !==
-            restaurantId
-          ) {
-
-            return false;
-
-          }
-
-          if (!startDate) {
-
-            return true;
-
-          }
-
-          return new Date(
-            visit.visited_at
-          ) >= startDate;
-
-        }
-      ).length;
-
-    }
-
-
-    /* =========================================
-       RENDER RESTAURANTS
-    ========================================= */
-
-    function renderRestaurants() {
-
-      restaurantList.innerHTML = "";
-
-
-      if (restaurants.length === 0) {
-
-        restaurantList.innerHTML = `
-          <div class="empty-message">
-            No restaurants have been added yet.
-          </div>
-        `;
+            `<div class="empty">
+                No restaurants have been added yet.
+            </div>`;
 
         return;
 
-      }
+    }
 
 
-      restaurants.forEach(
+    container.innerHTML = "";
+
+
+    restaurantData.forEach(
+
         function(restaurant) {
 
-          const allVisits =
-            getRestaurantVisitCount(
-              restaurant.id
+
+            const visits =
+                getRestaurantVisits(
+                    restaurant.id
+                );
+
+
+            const todayVisits =
+                getTodayRestaurantVisits(
+                    restaurant.id
+                );
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "restaurant-card";
+
+
+            let warning = "";
+
+
+            if (todayVisits.length === 0) {
+
+                warning =
+
+                    `<div class="today-warning">
+                        No visits today
+                    </div>`;
+
+            }
+
+
+            card.innerHTML =
+
+                `
+                <div class="restaurant-header">
+
+                    <div>
+
+                        <div class="restaurant-name">
+                            ${escapeHTML(restaurant.name)}
+                        </div>
+
+                        <div class="restaurant-location">
+                            ${escapeHTML(restaurant.location)}
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="visit-number">
+                            ${visits.length}
+                        </div>
+
+                        <div class="visit-label">
+                            Total Visits
+                        </div>
+
+                        ${warning}
+
+                    </div>
+
+                </div>
+
+
+                <div class="restaurant-details">
+
+
+                    <div class="detail-row">
+
+                        <div class="detail-label">
+                            Restaurant ID
+                        </div>
+
+                        <div class="detail-value">
+                            ${escapeHTML(restaurant.id)}
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-row">
+
+                        <div class="detail-label">
+                            Wi-Fi Name
+                        </div>
+
+                        <div class="detail-value">
+                            ${escapeHTML(restaurant.wifi_name)}
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-row">
+
+                        <div class="detail-label">
+                            Wi-Fi Password
+                        </div>
+
+                        <div class="detail-value">
+                            ${escapeHTML(restaurant.wifi_password)}
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="actions">
+
+
+                    <button
+                        class="action-button open-button"
+                        onclick="openCustomerPage('${restaurant.public_token}')">
+
+                        Open Customer Page
+
+                    </button>
+
+
+                    <button
+                        class="action-button qr-button"
+                        onclick="showQR('${restaurant.id}')">
+
+                        Generate QR
+
+                    </button>
+
+
+                    <button
+                        class="action-button regenerate-button"
+                        onclick="regenerateQR('${restaurant.id}')">
+
+                        Regenerate QR
+
+                    </button>
+
+
+                    <button
+                        class="action-button edit-button"
+                        onclick="editRestaurant('${restaurant.id}')">
+
+                        Edit
+
+                    </button>
+
+
+                    <button
+                        class="action-button delete-button"
+                        onclick="deleteRestaurant('${restaurant.id}')">
+
+                        Delete
+
+                    </button>
+
+
+                </div>
+                `;
+
+
+            container.appendChild(
+                card
             );
-
-          const todayVisits =
-            getRestaurantVisitCount(
-              restaurant.id,
-              getStartOfToday()
-            );
-
-          const sevenDayVisits =
-            getRestaurantVisitCount(
-              restaurant.id,
-              getDaysAgo(7)
-            );
-
-          const thirtyDayVisits =
-            getRestaurantVisitCount(
-              restaurant.id,
-              getDaysAgo(30)
-            );
-
-
-          const card =
-            document.createElement("div");
-
-          card.className =
-            "restaurant-card";
-
-
-          const statusClass =
-            todayVisits === 0
-              ? "status-badge warning"
-              : "status-badge";
-
-
-          const statusText =
-            todayVisits === 0
-              ? "No visits today"
-              : "Active";
-
-
-          card.innerHTML = `
-
-            <div class="restaurant-header">
-
-              <div>
-                <h3 class="restaurant-name">
-                  ${escapeHtml(restaurant.name)}
-                </h3>
-
-                <p class="restaurant-location">
-                  ${escapeHtml(restaurant.location)}
-                </p>
-              </div>
-
-              <span class="${statusClass}">
-                ${statusText}
-              </span>
-
-            </div>
-
-
-            <div class="restaurant-details">
-
-              <div class="detail-box">
-
-                <div class="detail-label">
-                  Today
-                </div>
-
-                <div class="detail-value">
-                  ${todayVisits}
-                </div>
-
-              </div>
-
-
-              <div class="detail-box">
-
-                <div class="detail-label">
-                  Last 7 Days
-                </div>
-
-                <div class="detail-value">
-                  ${sevenDayVisits}
-                </div>
-
-              </div>
-
-
-              <div class="detail-box">
-
-                <div class="detail-label">
-                  Last 30 Days
-                </div>
-
-                <div class="detail-value">
-                  ${thirtyDayVisits}
-                </div>
-
-              </div>
-
-
-              <div class="detail-box">
-
-                <div class="detail-label">
-                  All Time
-                </div>
-
-                <div class="detail-value">
-                  ${allVisits}
-                </div>
-
-              </div>
-
-
-              <div class="detail-box">
-
-                <div class="detail-label">
-                  Wi-Fi Name
-                </div>
-
-                <div class="detail-value">
-                  ${escapeHtml(restaurant.wifi_name)}
-                </div>
-
-              </div>
-
-
-              <div class="detail-box">
-
-                <div class="detail-label">
-                  Wi-Fi Password
-                </div>
-
-                <div class="detail-value">
-                  ${escapeHtml(restaurant.wifi_password)}
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <div class="restaurant-actions">
-
-              <button
-                class="action-button open-button"
-                onclick="openCustomerPage('${escapeAttribute(restaurant.id)}')"
-              >
-                Open Customer Page
-              </button>
-
-
-              <button
-                class="action-button qr-button"
-                onclick="showQr('${escapeAttribute(restaurant.id)}')"
-              >
-                Generate QR
-              </button>
-
-
-              <button
-                class="action-button edit-button"
-                onclick="showEdit('${escapeAttribute(restaurant.id)}')"
-              >
-                Edit
-              </button>
-
-
-              <button
-                class="action-button delete-button"
-                onclick="deleteRestaurant('${escapeAttribute(restaurant.id)}')"
-              >
-                Delete
-              </button>
-
-            </div>
-
-
-            <div
-              id="edit-${escapeAttribute(restaurant.id)}"
-              class="edit-box hidden"
-            >
-
-              <div class="edit-grid">
-
-                <div>
-                  <label>
-                    Restaurant Name
-                  </label>
-
-                  <input
-                    id="edit-name-${escapeAttribute(restaurant.id)}"
-                    value="${escapeAttribute(restaurant.name)}"
-                  >
-                </div>
-
-
-                <div>
-                  <label>
-                    Location
-                  </label>
-
-                  <input
-                    id="edit-location-${escapeAttribute(restaurant.id)}"
-                    value="${escapeAttribute(restaurant.location)}"
-                  >
-                </div>
-
-
-                <div>
-                  <label>
-                    Wi-Fi Name
-                  </label>
-
-                  <input
-                    id="edit-wifi-name-${escapeAttribute(restaurant.id)}"
-                    value="${escapeAttribute(restaurant.wifi_name)}"
-                  >
-                </div>
-
-
-                <div>
-                  <label>
-                    Wi-Fi Password
-                  </label>
-
-                  <input
-                    id="edit-wifi-password-${escapeAttribute(restaurant.id)}"
-                    value="${escapeAttribute(restaurant.wifi_password)}"
-                  >
-                </div>
-
-              </div>
-
-
-              <div class="edit-actions">
-
-                <button
-                  class="save-button"
-                  onclick="saveEdit('${escapeAttribute(restaurant.id)}')"
-                >
-                  Save Changes
-                </button>
-
-                <button
-                  class="cancel-button"
-                  onclick="hideEdit('${escapeAttribute(restaurant.id)}')"
-                >
-                  Cancel
-                </button>
-
-              </div>
-
-            </div>
-
-          `;
-
-
-          restaurantList.appendChild(card);
-
-        }
-      );
-
-    }
-
-
-    /* =========================================
-       ADD RESTAURANT
-    ========================================= */
-
-    addRestaurantForm.addEventListener(
-      "submit",
-      async function(event) {
-
-        event.preventDefault();
-
-
-        const id =
-          document.getElementById(
-            "restaurantId"
-          ).value
-            .trim()
-            .toLowerCase();
-
-
-        const name =
-          document.getElementById(
-            "restaurantName"
-          ).value
-            .trim();
-
-
-        const location =
-          document.getElementById(
-            "restaurantLocation"
-          ).value
-            .trim();
-
-
-        const wifiName =
-          document.getElementById(
-            "restaurantWifiName"
-          ).value
-            .trim();
-
-
-        const wifiPassword =
-          document.getElementById(
-            "restaurantWifiPassword"
-          ).value
-            .trim();
-
-
-        if (!id || !name || !location ||
-            !wifiName || !wifiPassword) {
-
-          showMessage(
-            "Please complete all fields.",
-            "error"
-          );
-
-          return;
 
         }
 
+    );
 
-        const {
-          error
-        } =
-          await supabaseClient
-            .from("restaurants")
-            .insert({
-              id: id,
-              name: name,
-              location: location,
-              wifi_name: wifiName,
-              wifi_password: wifiPassword
-            });
+}
 
 
-        if (error) {
 
-          showMessage(
-            "Could not add restaurant: " +
-            error.message,
-            "error"
-          );
+// =====================================================
+// CUSTOMER URL
+// =====================================================
 
-          return;
-
-        }
+function getCustomerUrl(publicToken) {
 
 
-        addRestaurantForm.reset();
-
-
-        showMessage(
-          "Restaurant added successfully.",
-          "success"
+    const url =
+        new URL(
+            "restaurant.html",
+            window.location.href
         );
 
 
-        await loadDashboard();
-
-      }
+    url.searchParams.set(
+        "token",
+        publicToken
     );
 
 
-    /* =========================================
-       EDIT
-    ========================================= */
+    return url.href;
 
-    function showEdit(id) {
-
-      const box =
-        document.getElementById(
-          "edit-" + id
-        );
-
-      if (box) {
-
-        box.classList.remove("hidden");
-
-      }
-
-    }
+}
 
 
-    function hideEdit(id) {
 
-      const box =
-        document.getElementById(
-          "edit-" + id
-        );
+// =====================================================
+// OPEN CUSTOMER PAGE
+// =====================================================
 
-      if (box) {
-
-        box.classList.add("hidden");
-
-      }
-
-    }
+function openCustomerPage(publicToken) {
 
 
-    async function saveEdit(id) {
+    if (!publicToken) {
 
-      const name =
-        document.getElementById(
-          "edit-name-" + id
-        ).value.trim();
-
-
-      const location =
-        document.getElementById(
-          "edit-location-" + id
-        ).value.trim();
-
-
-      const wifiName =
-        document.getElementById(
-          "edit-wifi-name-" + id
-        ).value.trim();
-
-
-      const wifiPassword =
-        document.getElementById(
-          "edit-wifi-password-" + id
-        ).value.trim();
-
-
-      if (!name ||
-          !location ||
-          !wifiName ||
-          !wifiPassword) {
-
-        showMessage(
-          "Please complete all fields.",
-          "error"
+        alert(
+            "This restaurant does not have a QR token."
         );
 
         return;
 
-      }
-
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("restaurants")
-          .update({
-            name: name,
-            location: location,
-            wifi_name: wifiName,
-            wifi_password: wifiPassword
-          })
-          .eq("id", id);
-
-
-      if (error) {
-
-        showMessage(
-          "Could not update restaurant: " +
-          error.message,
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      showMessage(
-        "Restaurant updated successfully.",
-        "success"
-      );
-
-
-      await loadDashboard();
-
     }
 
 
-    /* =========================================
-       DELETE
-    ========================================= */
-
-    async function deleteRestaurant(id) {
-
-      const restaurant =
-        restaurants.find(
-          function(item) {
-
-            return item.id === id;
-
-          }
+    const url =
+        getCustomerUrl(
+            publicToken
         );
 
 
-      if (!restaurant) {
-
-        return;
-
-      }
-
-
-      const confirmed =
-        confirm(
-          "Are you sure you want to delete " +
-          restaurant.name +
-          " (" +
-          restaurant.location +
-          ")?\n\n" +
-          "This will also delete its recorded visits."
-        );
-
-
-      if (!confirmed) {
-
-        return;
-
-      }
-
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("restaurants")
-          .delete()
-          .eq("id", id);
-
-
-      if (error) {
-
-        showMessage(
-          "Could not delete restaurant: " +
-          error.message,
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      showMessage(
-        "Restaurant deleted.",
-        "success"
-      );
-
-
-      await loadDashboard();
-
-    }
-
-
-    /* =========================================
-       CUSTOMER PAGE
-    ========================================= */
-
-    function getCustomerUrl(id) {
-
-      const url =
-        new URL(
-          "restaurant.html",
-          window.location.href
-        );
-
-      url.searchParams.set(
-        "id",
-        id
-      );
-
-      return url.href;
-
-    }
-
-
-    function openCustomerPage(id) {
-
-      const url =
-        getCustomerUrl(id);
-
-      window.open(
+    window.open(
         url,
         "_blank"
-      );
+    );
+
+}
+
+
+
+// =====================================================
+// SHOW QR
+// =====================================================
+
+function showQR(id) {
+
+
+    const restaurant =
+        restaurantData.find(
+
+            function(item) {
+
+                return item.id === id;
+
+            }
+
+        );
+
+
+    if (!restaurant) {
+
+        return;
 
     }
 
 
-    /* =========================================
-       QR CODE
-    ========================================= */
+    if (!restaurant.public_token) {
 
-    function showQr(id) {
-
-      const restaurant =
-        restaurants.find(
-          function(item) {
-
-            return item.id === id;
-
-          }
+        alert(
+            "This restaurant does not have a QR token yet."
         );
-
-
-      if (!restaurant) {
 
         return;
 
-      }
+    }
 
 
-      const url =
-        getCustomerUrl(id);
+    currentQRRestaurant =
+        restaurant;
 
 
-      currentQrUrl =
-        url;
+    const url =
+        getCustomerUrl(
+            restaurant.public_token
+        );
 
-      currentQrRestaurantName =
+
+    document.getElementById(
+        "qrTitle"
+    ).textContent =
+
         restaurant.name +
         " - " +
         restaurant.location;
 
 
-      qrTitle.textContent =
-        restaurant.name +
-        " QR Code";
-
-
-      qrUrl.textContent =
+    document.getElementById(
+        "qrUrl"
+    ).textContent =
         url;
 
 
-      qrCode.innerHTML = "";
+    document.getElementById(
+        "qrcode"
+    ).innerHTML = "";
 
 
-      new QRCode(
-        qrCode,
+    new QRCode(
+
+        document.getElementById(
+            "qrcode"
+        ),
+
         {
-          text: url,
-          width: 240,
-          height: 240,
-          colorDark: "#000000",
-          colorLight: "#ffffff",
-          correctLevel:
-            QRCode.CorrectLevel.H
+            text: url,
+
+            width: 240,
+
+            height: 240
+
         }
-      );
+
+    );
 
 
-      qrModal.classList.remove(
-        "hidden"
-      );
+    document.getElementById(
+        "qrModal"
+    ).style.display =
+        "block";
+
+}
+
+
+
+// =====================================================
+// CLOSE QR
+// =====================================================
+
+function closeQR() {
+
+
+    document.getElementById(
+        "qrModal"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "qrcode"
+    ).innerHTML = "";
+
+
+    currentQRRestaurant =
+        null;
+
+}
+
+
+
+// =====================================================
+// DOWNLOAD QR
+// =====================================================
+
+function downloadQR() {
+
+
+    if (!currentQRRestaurant) {
+
+        return;
 
     }
 
 
-    /* =========================================
-       DOWNLOAD QR
-    ========================================= */
-
-    downloadQrButton.addEventListener(
-      "click",
-      function() {
-
-        const canvas =
-          qrCode.querySelector(
-            "canvas"
-          );
+    const canvas =
+        document.querySelector(
+            "#qrcode canvas"
+        );
 
 
-        const image =
-          qrCode.querySelector(
-            "img"
-          );
+    if (!canvas) {
+
+        alert(
+            "QR code is not ready yet."
+        );
+
+        return;
+
+    }
 
 
-        let downloadUrl = "";
-
-
-        if (canvas) {
-
-          downloadUrl =
-            canvas.toDataURL(
-              "image/png"
-            );
-
-        } else if (image) {
-
-          downloadUrl =
-            image.src;
-
-        }
-
-
-        if (!downloadUrl) {
-
-          alert(
-            "Could not create the QR image."
-          );
-
-          return;
-
-        }
-
-
-        const link =
-          document.createElement(
+    const link =
+        document.createElement(
             "a"
-          );
-
-
-        const safeName =
-          currentQrRestaurantName
-            .replace(
-              /[^a-z0-9]+/gi,
-              "-"
-            )
-            .replace(
-              /^-|-$/g,
-              ""
-            );
-
-
-        link.href =
-          downloadUrl;
-
-
-        link.download =
-          "GuestConnect-" +
-          safeName +
-          "-QR.png";
-
-
-        document.body.appendChild(
-          link
         );
 
 
-        link.click();
+    link.download =
+
+        currentQRRestaurant.name
+            .replace(
+                /[^a-z0-9]/gi,
+                "-"
+            ) +
+
+        "-" +
+
+        currentQRRestaurant.location
+            .replace(
+                /[^a-z0-9]/gi,
+                "-"
+            ) +
+
+        "-GuestConnect-QR.png";
 
 
-        document.body.removeChild(
-          link
+    link.href =
+        canvas.toDataURL(
+            "image/png"
         );
 
-      }
-    );
+
+    link.click();
+
+}
 
 
-    /* =========================================
-       CLOSE QR
-    ========================================= */
 
-    closeQrButton.addEventListener(
-      "click",
-      closeQr
-    );
+// =====================================================
+// ADD RESTAURANT
+// =====================================================
+
+async function addRestaurant() {
 
 
-    qrModal.addEventListener(
-      "click",
-      function(event) {
-
-        if (
-          event.target === qrModal
-        ) {
-
-          closeQr();
-
-        }
-
-      }
-    );
+    const name =
+        document.getElementById(
+            "newName"
+        ).value.trim();
 
 
-    function closeQr() {
-
-      qrModal.classList.add(
-        "hidden"
-      );
-
-      qrCode.innerHTML = "";
-
-    }
+    const location =
+        document.getElementById(
+            "newLocation"
+        ).value.trim();
 
 
-    /* =========================================
-       MESSAGES
-    ========================================= */
+    const id =
+        document.getElementById(
+            "newID"
+        ).value.trim();
 
-    function showMessage(
-      text,
-      type
+
+    const wifiName =
+        document.getElementById(
+            "newWifiName"
+        ).value.trim();
+
+
+    const wifiPassword =
+        document.getElementById(
+            "newWifiPassword"
+        ).value.trim();
+
+
+    const message =
+        document.getElementById(
+            "addMessage"
+        );
+
+
+    message.textContent = "";
+
+
+    if (
+        !name ||
+        !location ||
+        !id ||
+        !wifiName ||
+        !wifiPassword
     ) {
 
-      adminMessage.textContent =
-        text;
+        message.textContent =
+            "Please fill in all fields.";
 
-
-      adminMessage.className =
-        "message";
-
-
-      if (type === "success") {
-
-        adminMessage.classList.add(
-          "success-message"
-        );
-
-      } else {
-
-        adminMessage.classList.add(
-          "info-message"
-        );
-
-      }
-
-
-      adminMessage.classList.remove(
-        "hidden"
-      );
+        return;
 
     }
 
 
-    function hideMessage() {
-
-      adminMessage.classList.add(
-        "hidden"
-      );
-
-    }
+    const publicToken =
+        crypto.randomUUID();
 
 
-    /* =========================================
-       HTML SAFETY
-    ========================================= */
+    const { error } =
 
-    function escapeHtml(value) {
+        await supabaseClient
 
-      return String(value)
-        .replace(
-          /&/g,
-          "&amp;"
-        )
-        .replace(
-          /</g,
-          "&lt;"
-        )
-        .replace(
-          />/g,
-          "&gt;"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        )
-        .replace(
-          /'/g,
-          "&#039;"
+            .from("restaurants")
+
+            .insert({
+
+                id: id,
+
+                name: name,
+
+                location: location,
+
+                wifi_name: wifiName,
+
+                wifi_password: wifiPassword,
+
+                public_token: publicToken
+
+            });
+
+
+    if (error) {
+
+        console.error(
+            "Add restaurant error:",
+            error
         );
 
+
+        message.textContent =
+            error.message;
+
+
+        return;
+
     }
 
 
-    function escapeAttribute(value) {
+    message.textContent =
+        "Restaurant added successfully.";
 
-      return String(value)
-        .replace(
-          /\\/g,
-          "\\\\"
-        )
-        .replace(
-          /'/g,
-          "\\'"
+
+    document.getElementById(
+        "newName"
+    ).value = "";
+
+
+    document.getElementById(
+        "newLocation"
+    ).value = "";
+
+
+    document.getElementById(
+        "newID"
+    ).value = "";
+
+
+    document.getElementById(
+        "newWifiName"
+    ).value = "";
+
+
+    document.getElementById(
+        "newWifiPassword"
+    ).value = "";
+
+
+    await loadDashboard();
+
+}
+
+
+
+// =====================================================
+// EDIT RESTAURANT
+// =====================================================
+
+async function editRestaurant(id) {
+
+
+    const restaurant =
+        restaurantData.find(
+
+            function(item) {
+
+                return item.id === id;
+
+            }
+
         );
 
+
+    if (!restaurant) {
+
+        return;
+
     }
 
-  </script>
+
+    const name =
+        prompt(
+            "Restaurant name:",
+            restaurant.name
+        );
+
+
+    if (name === null) {
+
+        return;
+
+    }
+
+
+    const location =
+        prompt(
+            "Location:",
+            restaurant.location
+        );
+
+
+    if (location === null) {
+
+        return;
+
+    }
+
+
+    const wifiName =
+        prompt(
+            "Wi-Fi name:",
+            restaurant.wifi_name
+        );
+
+
+    if (wifiName === null) {
+
+        return;
+
+    }
+
+
+    const wifiPassword =
+        prompt(
+            "Wi-Fi password:",
+            restaurant.wifi_password
+        );
+
+
+    if (wifiPassword === null) {
+
+        return;
+
+    }
+
+
+    const { error } =
+
+        await supabaseClient
+
+            .from("restaurants")
+
+            .update({
+
+                name: name.trim(),
+
+                location: location.trim(),
+
+                wifi_name: wifiName.trim(),
+
+                wifi_password:
+                    wifiPassword.trim()
+
+            })
+
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (error) {
+
+        alert(
+            "Could not update restaurant:\n\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadDashboard();
+
+}
+
+
+
+// =====================================================
+// REGENERATE QR TOKEN
+// =====================================================
+
+async function regenerateQR(id) {
+
+
+    const restaurant =
+        restaurantData.find(
+
+            function(item) {
+
+                return item.id === id;
+
+            }
+
+        );
+
+
+    if (!restaurant) {
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+
+            "Regenerate the QR code for " +
+
+            restaurant.name +
+
+            " - " +
+
+            restaurant.location +
+
+            "?\n\n" +
+
+            "The old QR code will stop working."
+
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    const newToken =
+        crypto.randomUUID();
+
+
+    const { error } =
+
+        await supabaseClient
+
+            .from("restaurants")
+
+            .update({
+
+                public_token:
+                    newToken
+
+            })
+
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (error) {
+
+        alert(
+            "Could not regenerate QR:\n\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        "New QR token created successfully.\n\n" +
+        "The old QR code is now invalid."
+    );
+
+
+    await loadDashboard();
+
+}
+
+
+
+// =====================================================
+// DELETE RESTAURANT
+// =====================================================
+
+async function deleteRestaurant(id) {
+
+
+    const restaurant =
+        restaurantData.find(
+
+            function(item) {
+
+                return item.id === id;
+
+            }
+
+        );
+
+
+    if (!restaurant) {
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+
+            "Delete " +
+
+            restaurant.name +
+
+            " - " +
+
+            restaurant.location +
+
+            "?\n\n" +
+
+            "This will also delete its recorded visits."
+
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    const { error } =
+
+        await supabaseClient
+
+            .from("restaurants")
+
+            .delete()
+
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (error) {
+
+        alert(
+            "Could not delete restaurant:\n\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadDashboard();
+
+}
+
+
+
+// =====================================================
+// ESCAPE HTML
+// =====================================================
+
+function escapeHTML(value) {
+
+
+    if (value === null ||
+        value === undefined) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+// =====================================================
+// START
+// =====================================================
+
+checkLogin();
+
+
+</script>
+
 
 </body>
+
 </html>
