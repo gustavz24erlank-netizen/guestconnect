@@ -1,2217 +1,3053 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>GuestConnect Admin</title>
 
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <!-- QR Code -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
+    <!-- Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
 
-
         body {
-
             margin: 0;
-
             font-family: Arial, Helvetica, sans-serif;
-
-            background: #f3f4f6;
-
-            color: #1f2937;
-
+            background: #f3f5f7;
+            color: #17202a;
         }
 
-
-        .top {
-
-            background: #111827;
-
-            color: white;
-
-            padding: 20px;
-
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
         }
 
-
-        .top-inner {
-
-            max-width: 1100px;
-
-            margin: auto;
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            gap: 15px;
-
-        }
-
-
-        .logo {
-
-            font-size: 25px;
-
-            font-weight: bold;
-
-        }
-
-
-        .admin-label {
-
-            font-size: 13px;
-
-            opacity: 0.75;
-
-            margin-top: 3px;
-
-        }
-
-
-        .logout-button {
-
-            background: #374151;
-
-            color: white;
-
-            border: none;
-
-            padding: 10px 15px;
-
-            border-radius: 9px;
-
+        button {
             cursor: pointer;
-
-            font-weight: bold;
-
         }
 
+        /* =========================
+           HEADER
+        ========================= */
 
-        .container {
-
-            max-width: 1100px;
-
-            margin: 25px auto;
-
-            padding: 0 16px;
-
+        header {
+            background: #111827;
+            color: white;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
+        .brand {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand span {
+            color: #60a5fa;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #userEmail {
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        .logout-btn {
+            background: #374151;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-weight: 700;
+        }
+
+        .logout-btn:hover {
+            background: #4b5563;
+        }
+
+        /* =========================
+           LOGIN
+        ========================= */
+
+        #loginScreen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #111827;
+        }
 
         .login-card {
-
+            width: 100%;
             max-width: 420px;
-
-            margin: 70px auto;
-
             background: white;
-
-            padding: 30px;
-
             border-radius: 18px;
-
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
         }
 
-
-        .login-card h1 {
-
-            margin-top: 0;
-
-            text-align: center;
-
+        .login-logo {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 8px;
         }
 
+        .login-logo span {
+            color: #2563eb;
+        }
 
-        .login-card p {
-
-            text-align: center;
-
+        .login-subtitle {
             color: #6b7280;
-
-        }
-
-
-        input {
-
-            width: 100%;
-
-            padding: 12px;
-
-            border: 1px solid #d1d5db;
-
-            border-radius: 9px;
-
-            font-size: 15px;
-
-            margin-top: 6px;
-
-            margin-bottom: 15px;
-
-        }
-
-
-        label {
-
-            font-size: 13px;
-
-            font-weight: bold;
-
-        }
-
-
-        .primary-button {
-
-            width: 100%;
-
-            background: #111827;
-
-            color: white;
-
-            border: none;
-
-            padding: 13px;
-
-            border-radius: 10px;
-
-            font-size: 15px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-        }
-
-
-        .message {
-
-            margin-top: 15px;
-
-            text-align: center;
-
-            color: #b91c1c;
-
-            font-size: 14px;
-
-        }
-
-
-        .section {
-
             margin-bottom: 25px;
-
         }
 
-
-        .section-title {
-
-            font-size: 22px;
-
-            font-weight: bold;
-
-            margin-bottom: 15px;
-
+        .login-card label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 7px;
         }
 
+        .login-card input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            margin-bottom: 16px;
+            outline: none;
+        }
+
+        .login-card input:focus {
+            border-color: #2563eb;
+        }
+
+        .login-btn {
+            width: 100%;
+            border: none;
+            border-radius: 9px;
+            background: #2563eb;
+            color: white;
+            padding: 13px;
+            font-weight: 800;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        #loginError {
+            color: #dc2626;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        #app {
+            display: none;
+        }
+
+        .container {
+            max-width: 1450px;
+            margin: 0 auto;
+            padding: 28px;
+        }
+
+        .page-title {
+            margin-bottom: 22px;
+        }
+
+        .page-title h1 {
+            margin: 0 0 5px;
+            font-size: 30px;
+        }
+
+        .page-title p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+        /* =========================
+           STAT CARDS
+        ========================= */
 
         .stats-grid {
-
             display: grid;
-
             grid-template-columns: repeat(5, 1fr);
-
-            gap: 12px;
-
+            gap: 14px;
+            margin-bottom: 28px;
         }
-
 
         .stat-card {
-
             background: white;
-
-            padding: 18px;
-
             border-radius: 14px;
-
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
         }
-
 
         .stat-label {
-
-            color: #6b7280;
-
             font-size: 13px;
-
+            color: #6b7280;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
-
-        .stat-number {
-
-            font-size: 28px;
-
-            font-weight: bold;
-
-            margin-top: 6px;
-
+        .stat-value {
+            font-size: 30px;
+            font-weight: 800;
         }
 
+        /* =========================
+           SECTIONS
+        ========================= */
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 22px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 24px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .section-subtitle {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 9px 13px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-dark {
+            background: #111827;
+            color: white;
+        }
+
+        /* =========================
+           RESTAURANT GRID
+        ========================= */
+
+        .restaurant-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
 
         .restaurant-card {
-
-            background: white;
-
-            border-radius: 16px;
-
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
             padding: 20px;
-
-            margin-bottom: 15px;
-
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-
+            background: #fff;
         }
 
-
-        .restaurant-header {
-
+        .restaurant-top {
             display: flex;
-
             justify-content: space-between;
-
-            align-items: flex-start;
-
             gap: 15px;
-
+            align-items: flex-start;
         }
-
 
         .restaurant-name {
-
             font-size: 21px;
-
-            font-weight: bold;
-
+            font-weight: 800;
+            margin-bottom: 4px;
         }
-
 
         .restaurant-location {
-
             color: #6b7280;
-
-            margin-top: 4px;
-
+            font-size: 14px;
         }
 
-
-        .visit-number {
-
-            font-size: 24px;
-
-            font-weight: bold;
-
-            text-align: right;
-
+        .restaurant-id {
+            color: #9ca3af;
+            font-size: 11px;
+            margin-top: 7px;
+            word-break: break-all;
         }
 
-
-        .visit-label {
-
-            font-size: 12px;
-
-            color: #6b7280;
-
-        }
-
-
-        .today-warning {
-
-            display: inline-block;
-
-            margin-top: 8px;
-
-            background: #fee2e2;
-
-            color: #991b1b;
-
-            padding: 5px 9px;
-
-            border-radius: 7px;
-
-            font-size: 12px;
-
-            font-weight: bold;
-
-        }
-
-
-        .restaurant-details {
-
+        .wifi-box {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 13px;
             margin-top: 18px;
-
-            padding: 15px;
-
-            background: #f9fafb;
-
-            border-radius: 12px;
-
         }
 
-
-        .detail-row {
-
-            margin-bottom: 10px;
-
-        }
-
-
-        .detail-row:last-child {
-
-            margin-bottom: 0;
-
-        }
-
-
-        .detail-label {
-
-            font-size: 12px;
-
-            color: #6b7280;
-
-        }
-
-
-        .detail-value {
-
-            font-weight: bold;
-
-            word-break: break-word;
-
-        }
-
-
-        .actions {
-
+        .wifi-row {
             display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
 
-            flex-wrap: wrap;
+        .wifi-row:last-child {
+            margin-bottom: 0;
+        }
 
+        .wifi-label {
+            color: #6b7280;
+            font-weight: 700;
+        }
+
+        .wifi-value {
+            font-weight: 700;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        /* =========================
+           CONTACT
+        ========================= */
+
+        .contact-box {
+            margin-top: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 14px;
+            background: #fff;
+        }
+
+        .contact-title {
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .contact-row {
+            display: grid;
+            grid-template-columns: 95px 1fr;
             gap: 8px;
-
-            margin-top: 18px;
-
-        }
-
-
-        .action-button {
-
-            border: none;
-
-            padding: 10px 13px;
-
-            border-radius: 9px;
-
-            cursor: pointer;
-
-            font-weight: bold;
-
+            margin-bottom: 7px;
             font-size: 13px;
-
         }
 
-
-        .open-button {
-
-            background: #e0e7ff;
-
-            color: #3730a3;
-
+        .contact-row:last-child {
+            margin-bottom: 0;
         }
 
+        .contact-label {
+            color: #6b7280;
+            font-weight: 700;
+        }
 
-        .qr-button {
+        .contact-value {
+            word-break: break-word;
+        }
 
-            background: #dcfce7;
+        .no-contact {
+            color: #9ca3af;
+            font-size: 13px;
+        }
 
+        /* =========================
+           RESTAURANT STATS
+        ========================= */
+
+        .restaurant-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .mini-stat {
+            background: #f8fafc;
+            border-radius: 9px;
+            padding: 11px;
+            text-align: center;
+        }
+
+        .mini-stat-label {
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .mini-stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            margin-top: 3px;
+        }
+
+        /* =========================
+           REPORT WARNING
+        ========================= */
+
+        .report-warning {
+            margin-top: 14px;
+            padding: 11px 13px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .report-ok {
+            margin-top: 14px;
+            padding: 11px 13px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
             color: #166534;
-
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
         }
 
+        /* =========================
+           CARD BUTTONS
+        ========================= */
 
-        .edit-button {
-
-            background: #fef3c7;
-
-            color: #92400e;
-
+        .card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 18px;
         }
 
+        /* =========================
+           ANALYTICS
+        ========================= */
 
-        .delete-button {
-
-            background: #fee2e2;
-
-            color: #991b1b;
-
+        .analytics-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
         }
 
-
-        .regenerate-button {
-
-            background: #ede9fe;
-
-            color: #5b21b6;
-
+        .analytics-box {
+            background: #f8fafc;
+            border-radius: 11px;
+            padding: 15px;
         }
 
+        .analytics-box-label {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+        }
 
-        .add-card {
+        .analytics-box-value {
+            font-size: 25px;
+            font-weight: 800;
+            margin-top: 5px;
+        }
 
+        .chart-container {
+            position: relative;
+            height: 340px;
+            width: 100%;
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ranking-table th,
+        .ranking-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .ranking-table th {
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .rank-number {
+            font-weight: 800;
+        }
+
+        /* =========================
+           MODALS
+        ========================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-content {
             background: white;
-
-            padding: 22px;
-
+            max-width: 620px;
+            margin: 30px auto;
             border-radius: 16px;
-
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-
+            padding: 24px;
+            box-shadow: 0 20px 70px rgba(0,0,0,0.3);
         }
 
+        .modal-large {
+            max-width: 950px;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close-btn {
+            border: none;
+            background: #f3f4f6;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 11px;
+            outline: none;
+        }
+
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+        }
 
         .form-grid {
-
             display: grid;
-
-            grid-template-columns: repeat(2, 1fr);
-
-            gap: 15px;
-
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
         }
 
-
-        .full {
-
-            grid-column: 1 / -1;
-
-        }
-
-
-        .add-button {
-
-            background: #111827;
-
-            color: white;
-
-            border: none;
-
-            padding: 12px 18px;
-
-            border-radius: 9px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-        }
-
-
-        .empty {
-
-            background: white;
-
-            padding: 30px;
-
-            border-radius: 16px;
-
-            text-align: center;
-
-            color: #6b7280;
-
-        }
-
-
-        #dashboard {
-
-            display: none;
-
-        }
-
-
-        #qrModal {
-
-            display: none;
-
-            position: fixed;
-
-            inset: 0;
-
-            background: rgba(0,0,0,0.65);
-
-            z-index: 1000;
-
-            padding: 20px;
-
-        }
-
-
-        .qr-box {
-
-            max-width: 420px;
-
-            margin: 50px auto;
-
-            background: white;
-
-            border-radius: 18px;
-
-            padding: 25px;
-
-            text-align: center;
-
-        }
-
-
-        #qrcode {
-
+        .modal-actions {
             display: flex;
-
-            justify-content: center;
-
-            margin: 20px 0;
-
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
         }
 
+        /* =========================
+           REPORT ITEMS
+        ========================= */
+
+        .report-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 11px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .report-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .report-status {
+            display: inline-block;
+            padding: 5px 8px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .status-unresolved {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-fixed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .report-date {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* =========================
+           QR
+        ========================= */
+
+        #qrCode {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
 
         .qr-url {
-
-            background: #f3f4f6;
-
-            padding: 12px;
-
-            border-radius: 9px;
-
-            font-size: 12px;
-
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 11px;
             word-break: break-all;
-
-            text-align: left;
-
+            color: #6b7280;
         }
 
+        /* =========================
+           EMPTY / LOADING
+        ========================= */
 
-        .modal-buttons {
-
-            display: flex;
-
-            gap: 10px;
-
-            margin-top: 15px;
-
+        .empty {
+            color: #6b7280;
+            padding: 20px 0;
+            text-align: center;
         }
 
-
-        .modal-buttons button {
-
-            flex: 1;
-
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 30px;
         }
 
-
-        .close-button {
-
-            background: #e5e7eb;
-
-            color: #111827;
-
+        .error-box {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 13px;
+            border-radius: 9px;
+            margin-bottom: 15px;
         }
 
+        /* =========================
+           MOBILE
+        ========================= */
 
-        .download-button {
+        @media (max-width: 1100px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
 
-            background: #111827;
-
-            color: white;
-
+            .restaurant-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
+        @media (max-width: 700px) {
+            header {
+                padding: 14px 15px;
+            }
 
-        @media (max-width: 800px) {
+            .brand {
+                font-size: 21px;
+            }
+
+            #userEmail {
+                display: none;
+            }
+
+            .container {
+                padding: 16px;
+            }
+
+            .page-title h1 {
+                font-size: 25px;
+            }
 
             .stats-grid {
-
                 grid-template-columns: repeat(2, 1fr);
-
             }
 
-        }
-
-
-        @media (max-width: 600px) {
-
-            .top-inner {
-
-                align-items: flex-start;
-
+            .analytics-summary {
+                grid-template-columns: repeat(2, 1fr);
             }
-
 
             .form-grid {
-
                 grid-template-columns: 1fr;
-
             }
 
-
-            .full {
-
-                grid-column: auto;
-
+            .restaurant-stats {
+                grid-template-columns: repeat(3, 1fr);
             }
 
-
-            .restaurant-header {
-
-                flex-direction: column;
-
+            .card-actions .btn {
+                flex: 1 1 auto;
             }
 
-
-            .visit-number {
-
-                text-align: left;
-
+            .chart-container {
+                height: 280px;
             }
 
+            .ranking-table {
+                font-size: 12px;
+            }
+
+            .ranking-table th,
+            .ranking-table td {
+                padding: 9px 5px;
+            }
         }
 
-
-        @media (max-width: 400px) {
-
+        @media (max-width: 450px) {
             .stats-grid {
-
-                grid-template-columns: 1fr;
-
+                grid-template-columns: 1fr 1fr;
             }
 
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .restaurant-top {
+                flex-direction: column;
+            }
+
+            .contact-row {
+                grid-template-columns: 80px 1fr;
+            }
+
+            .card-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .card-actions .btn {
+                width: 100%;
+            }
         }
-
     </style>
-
 </head>
-
-
 
 <body>
 
-
-<!-- =====================================================
+<!-- =========================================================
      LOGIN
-===================================================== -->
+========================================================= -->
 
 <div id="loginScreen">
 
-
     <div class="login-card">
 
-        <h1>
-            GuestConnect
-        </h1>
-
-        <p>
-            Admin Dashboard
-        </p>
-
-
-        <label>
-            Email
-        </label>
-
-        <input
-            id="email"
-            type="email"
-            placeholder="Admin email">
-
-
-        <label>
-            Password
-        </label>
-
-        <input
-            id="password"
-            type="password"
-            placeholder="Password">
-
-
-        <button
-            class="primary-button"
-            onclick="login()">
-
-            Login
-
-        </button>
-
-
-        <div
-            id="loginMessage"
-            class="message">
+        <div class="login-logo">
+            Guest<span>Connect</span>
         </div>
 
-    </div>
+        <div class="login-subtitle">
+            Admin Dashboard
+        </div>
 
+        <form id="loginForm">
+
+            <label for="email">Email</label>
+
+            <input
+                id="email"
+                type="email"
+                placeholder="Your admin email"
+                required
+            >
+
+            <label for="password">Password</label>
+
+            <input
+                id="password"
+                type="password"
+                placeholder="Your password"
+                required
+            >
+
+            <button
+                type="submit"
+                class="login-btn"
+            >
+                Login
+            </button>
+
+        </form>
+
+        <div id="loginError"></div>
+
+    </div>
 
 </div>
 
 
+<!-- =========================================================
+     APPLICATION
+========================================================= -->
 
-<!-- =====================================================
-     DASHBOARD
-===================================================== -->
+<div id="app">
 
-<div id="dashboard">
+    <header>
 
+        <div class="brand">
+            Guest<span>Connect</span>
+        </div>
 
-    <div class="top">
+        <div class="header-right">
 
-        <div class="top-inner">
-
-            <div>
-
-                <div class="logo">
-                    GuestConnect
-                </div>
-
-                <div class="admin-label">
-                    Admin Dashboard
-                </div>
-
-            </div>
-
+            <div id="userEmail"></div>
 
             <button
-                class="logout-button"
-                onclick="logout()">
-
+                class="logout-btn"
+                id="logoutBtn"
+            >
                 Logout
-
             </button>
 
         </div>
 
-    </div>
+    </header>
 
 
+    <main class="container">
 
-    <div class="container">
+        <div class="page-title">
+
+            <h1>Admin Dashboard</h1>
+
+            <p>
+                Manage restaurants, Wi-Fi information, QR codes,
+                contacts, reports and analytics.
+            </p>
+
+        </div>
 
 
         <!-- =================================================
-             STATS
-        ================================================= -->
+             OVERALL STATS
+        ================================================== -->
 
-        <div class="section">
+        <div class="stats-grid">
 
-            <div class="section-title">
-                Overall Visits
+            <div class="stat-card">
+                <div class="stat-label">TODAY</div>
+                <div class="stat-value" id="statToday">0</div>
             </div>
 
+            <div class="stat-card">
+                <div class="stat-label">LAST 7 DAYS</div>
+                <div class="stat-value" id="stat7Days">0</div>
+            </div>
 
-            <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">LAST 30 DAYS</div>
+                <div class="stat-value" id="stat30Days">0</div>
+            </div>
 
+            <div class="stat-card">
+                <div class="stat-label">THIS YEAR</div>
+                <div class="stat-value" id="statYear">0</div>
+            </div>
 
-                <div class="stat-card">
-
-                    <div class="stat-label">
-                        Today
-                    </div>
-
-                    <div
-                        id="todayCount"
-                        class="stat-number">
-
-                        0
-
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-label">
-                        Last 7 Days
-                    </div>
-
-                    <div
-                        id="sevenDayCount"
-                        class="stat-number">
-
-                        0
-
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-label">
-                        Last 30 Days
-                    </div>
-
-                    <div
-                        id="thirtyDayCount"
-                        class="stat-number">
-
-                        0
-
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-label">
-                        This Year
-                    </div>
-
-                    <div
-                        id="yearCount"
-                        class="stat-number">
-
-                        0
-
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-label">
-                        All Time
-                    </div>
-
-                    <div
-                        id="allTimeCount"
-                        class="stat-number">
-
-                        0
-
-                    </div>
-
-                </div>
-
-
+            <div class="stat-card">
+                <div class="stat-label">ALL TIME</div>
+                <div class="stat-value" id="statAllTime">0</div>
             </div>
 
         </div>
 
 
+        <!-- =================================================
+             ANALYTICS
+        ================================================== -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <div>
+                    <h2 class="section-title">
+                        📊 GuestConnect Analytics
+                    </h2>
+
+                    <div class="section-subtitle">
+                        Overall visitor activity across all restaurants.
+                    </div>
+                </div>
+
+                <select
+                    id="overallChartPeriod"
+                    class="btn btn-secondary"
+                >
+                    <option value="7">Last 7 Days</option>
+                    <option value="30" selected>Last 30 Days</option>
+                    <option value="12">Last 12 Months</option>
+                </select>
+
+            </div>
+
+
+            <div class="analytics-summary">
+
+                <div class="analytics-box">
+                    <div class="analytics-box-label">
+                        TOTAL RESTAURANTS
+                    </div>
+                    <div
+                        class="analytics-box-value"
+                        id="analyticsRestaurants"
+                    >
+                        0
+                    </div>
+                </div>
+
+                <div class="analytics-box">
+                    <div class="analytics-box-label">
+                        RESTAURANTS WITH VISITS TODAY
+                    </div>
+                    <div
+                        class="analytics-box-value"
+                        id="analyticsActiveRestaurants"
+                    >
+                        0
+                    </div>
+                </div>
+
+                <div class="analytics-box">
+                    <div class="analytics-box-label">
+                        NO VISITS TODAY
+                    </div>
+                    <div
+                        class="analytics-box-value"
+                        id="analyticsInactiveRestaurants"
+                    >
+                        0
+                    </div>
+                </div>
+
+                <div class="analytics-box">
+                    <div class="analytics-box-label">
+                        AVG. VISITS / RESTAURANT
+                    </div>
+                    <div
+                        class="analytics-box-value"
+                        id="analyticsAverage"
+                    >
+                        0
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="chart-container">
+                <canvas id="overallChart"></canvas>
+            </div>
+
+        </section>
+
 
         <!-- =================================================
-             ADD RESTAURANT
-        ================================================= -->
+             RESTAURANT RANKING
+        ================================================== -->
 
-        <div class="section">
+        <section class="section">
 
-            <div class="section-title">
-                Add Restaurant
+            <div class="section-header">
+
+                <div>
+                    <h2 class="section-title">
+                        🏆 Restaurant Performance
+                    </h2>
+
+                    <div class="section-subtitle">
+                        Restaurants ranked by visits.
+                    </div>
+                </div>
+
+                <select
+                    id="rankingPeriod"
+                    class="btn btn-secondary"
+                >
+                    <option value="today">Today</option>
+                    <option value="7">Last 7 Days</option>
+                    <option value="30" selected>Last 30 Days</option>
+                    <option value="year">This Year</option>
+                    <option value="all">All Time</option>
+                </select>
+
             </div>
 
 
-            <div class="add-card">
+            <div id="rankingContainer">
 
-
-                <div class="form-grid">
-
-
-                    <div>
-
-                        <label>
-                            Restaurant name
-                        </label>
-
-                        <input
-                            id="newName"
-                            type="text"
-                            placeholder="Wimpy">
-
-                    </div>
-
-
-                    <div>
-
-                        <label>
-                            Location
-                        </label>
-
-                        <input
-                            id="newLocation"
-                            type="text"
-                            placeholder="Kimberley">
-
-                    </div>
-
-
-                    <div>
-
-                        <label>
-                            Restaurant ID
-                        </label>
-
-                        <input
-                            id="newID"
-                            type="text"
-                            placeholder="wimpy-kimberley">
-
-                    </div>
-
-
-                    <div>
-
-                        <label>
-                            Wi-Fi name
-                        </label>
-
-                        <input
-                            id="newWifiName"
-                            type="text"
-                            placeholder="WIMPY-GUEST">
-
-                    </div>
-
-
-                    <div>
-
-                        <label>
-                            Wi-Fi password
-                        </label>
-
-                        <input
-                            id="newWifiPassword"
-                            type="text"
-                            placeholder="12345678">
-
-                    </div>
-
-
-                    <div class="full">
-
-                        <button
-                            class="add-button"
-                            onclick="addRestaurant()">
-
-                            Add Restaurant
-
-                        </button>
-
-                    </div>
-
-
+                <div class="loading">
+                    Loading ranking...
                 </div>
-
-
-                <div
-                    id="addMessage"
-                    class="message">
-                </div>
-
 
             </div>
 
-        </div>
-
+        </section>
 
 
         <!-- =================================================
              RESTAURANTS
-        ================================================= -->
+        ================================================== -->
 
-        <div class="section">
+        <section class="section">
 
-            <div class="section-title">
-                Restaurants
+            <div class="section-header">
+
+                <div>
+                    <h2 class="section-title">
+                        Restaurants
+                    </h2>
+
+                    <div class="section-subtitle">
+                        Manage every GuestConnect restaurant.
+                    </div>
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    id="addRestaurantBtn"
+                >
+                    + Add Restaurant
+                </button>
+
             </div>
 
 
-            <div id="restaurantList">
+            <div id="restaurantContainer">
 
-                Loading restaurants...
+                <div class="loading">
+                    Loading restaurants...
+                </div>
 
             </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     RESTAURANT EDIT MODAL
+========================================================= -->
+
+<div
+    class="modal"
+    id="restaurantModal"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2 id="restaurantModalTitle">
+                Add Restaurant
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('restaurantModal')"
+            >
+                ×
+            </button>
 
         </div>
 
+
+        <form id="restaurantForm">
+
+            <input
+                type="hidden"
+                id="restaurantEditId"
+            >
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="restaurantName">
+                        Restaurant Name
+                    </label>
+
+                    <input
+                        id="restaurantName"
+                        required
+                        placeholder="Wimpy"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="restaurantLocation">
+                        Location
+                    </label>
+
+                    <input
+                        id="restaurantLocation"
+                        required
+                        placeholder="Kimberley"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="wifiName">
+                        Wi-Fi Name
+                    </label>
+
+                    <input
+                        id="wifiName"
+                        required
+                        placeholder="WIMPY-GUEST"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="wifiPassword">
+                        Wi-Fi Password
+                    </label>
+
+                    <input
+                        id="wifiPassword"
+                        required
+                        placeholder="12345678"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <hr style="border:0;border-top:1px solid #e5e7eb;margin:20px 0;">
+
+
+            <h3 style="margin:0 0 15px;">
+                Restaurant Contact
+            </h3>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="contactName">
+                        Contact
+                    </label>
+
+                    <input
+                        id="contactName"
+                        placeholder="Johan Smith"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="contactPosition">
+                        Position
+                    </label>
+
+                    <input
+                        id="contactPosition"
+                        placeholder="Restaurant Manager"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="contactCell">
+                        Cell
+                    </label>
+
+                    <input
+                        id="contactCell"
+                        type="tel"
+                        placeholder="082 123 4567"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="contactNotes">
+                        Notes
+                    </label>
+
+                    <textarea
+                        id="contactNotes"
+                        placeholder="WhatsApp preferred. Contact before 14:00."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="closeModal('restaurantModal')"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Save Restaurant
+                </button>
+
+            </div>
+
+        </form>
 
     </div>
 
 </div>
 
 
-
-<!-- =====================================================
+<!-- =========================================================
      QR MODAL
-===================================================== -->
+========================================================= -->
 
-<div id="qrModal">
+<div
+    class="modal"
+    id="qrModal"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2 id="qrTitle">
+                Restaurant QR Code
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('qrModal')"
+            >
+                ×
+            </button>
+
+        </div>
 
 
-    <div class="qr-box">
-
-
-        <h2 id="qrTitle">
-            Restaurant QR Code
-        </h2>
-
-
-        <div id="qrcode"></div>
+        <div
+            id="qrCode"
+        ></div>
 
 
         <div
             id="qrUrl"
-            class="qr-url">
-        </div>
+            class="qr-url"
+        ></div>
 
 
-        <div class="modal-buttons">
-
+        <div class="modal-actions">
 
             <button
-                class="action-button close-button"
-                onclick="closeQR()">
-
+                class="btn btn-secondary"
+                onclick="closeModal('qrModal')"
+            >
                 Close
-
             </button>
-
 
             <button
-                class="action-button download-button"
-                onclick="downloadQR()">
-
+                class="btn btn-primary"
+                id="downloadQrBtn"
+            >
                 Download QR
-
             </button>
 
-
         </div>
-
 
     </div>
 
 </div>
 
 
+<!-- =========================================================
+     REPORT MODAL
+========================================================= -->
+
+<div
+    class="modal"
+    id="reportModal"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2 id="reportTitle">
+                    Wi-Fi Reports
+                </h2>
+
+                <div
+                    class="section-subtitle"
+                    id="reportSubtitle"
+                ></div>
+
+            </div>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('reportModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div id="reportContainer"></div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     ANALYTICS MODAL
+========================================================= -->
+
+<div
+    class="modal"
+    id="analyticsModal"
+>
+
+    <div class="modal-content modal-large">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2 id="restaurantAnalyticsTitle">
+                    Restaurant Analytics
+                </h2>
+
+                <div
+                    class="section-subtitle"
+                    id="restaurantAnalyticsSubtitle"
+                ></div>
+
+            </div>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('analyticsModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="analytics-summary">
+
+            <div class="analytics-box">
+                <div class="analytics-box-label">
+                    TODAY
+                </div>
+                <div
+                    class="analytics-box-value"
+                    id="restaurantAnalyticsToday"
+                >
+                    0
+                </div>
+            </div>
+
+            <div class="analytics-box">
+                <div class="analytics-box-label">
+                    7 DAYS
+                </div>
+                <div
+                    class="analytics-box-value"
+                    id="restaurantAnalytics7"
+                >
+                    0
+                </div>
+            </div>
+
+            <div class="analytics-box">
+                <div class="analytics-box-label">
+                    30 DAYS
+                </div>
+                <div
+                    class="analytics-box-value"
+                    id="restaurantAnalytics30"
+                >
+                    0
+                </div>
+            </div>
+
+            <div class="analytics-box">
+                <div class="analytics-box-label">
+                    ALL TIME
+                </div>
+                <div
+                    class="analytics-box-value"
+                    id="restaurantAnalyticsAll"
+                >
+                    0
+                </div>
+            </div>
+
+        </div>
+
+
+        <div style="margin-bottom:15px;">
+
+            <select
+                id="restaurantChartPeriod"
+                class="btn btn-secondary"
+            >
+                <option value="7">
+                    Last 7 Days
+                </option>
+
+                <option
+                    value="30"
+                    selected
+                >
+                    Last 30 Days
+                </option>
+
+                <option value="12">
+                    Last 12 Months
+                </option>
+            </select>
+
+        </div>
+
+
+        <div class="chart-container">
+
+            <canvas id="restaurantChart"></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
 
 <script>
 
+    /* =========================================================
+       SUPABASE
+    ========================================================= */
 
-// =====================================================
-// SUPABASE
-// =====================================================
+    const SUPABASE_URL =
+        "https://ksrsjhwklrwrfgzkqcbi.supabase.co";
 
-const SUPABASE_URL =
-    "https://ksrsjhwklrwrfgzkqcbi.supabase.co";
-
-
-const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_bLtm1wBIxmZvwLteiMA2tg_BtLHhgGc";
+    const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_bLtm1wBIxmZvwLteiMA2tg_BtLHhgGc";
 
 
-const supabaseClient =
-    window.supabase.createClient(
-
-        SUPABASE_URL,
-
-        SUPABASE_PUBLISHABLE_KEY
-
-    );
-
-
-
-// =====================================================
-// VARIABLES
-// =====================================================
-
-let currentQRRestaurant = null;
-
-let restaurantData = [];
-
-let visitData = [];
-
-
-
-// =====================================================
-// LOGIN
-// =====================================================
-
-async function login() {
-
-
-    const email =
-        document.getElementById(
-            "email"
-        ).value.trim();
-
-
-    const password =
-        document.getElementById(
-            "password"
-        ).value;
-
-
-    const message =
-        document.getElementById(
-            "loginMessage"
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
         );
 
 
-    message.textContent = "Logging in...";
+    /* =========================================================
+       GLOBAL DATA
+    ========================================================= */
+
+    let restaurants = [];
+    let visits = [];
+
+    let overallChart = null;
+    let restaurantChart = null;
+
+    let currentAnalyticsRestaurantId = null;
+
+    let currentQrRestaurant = null;
 
 
-    const { data, error } =
+    /* =========================================================
+       LOGIN
+    ========================================================= */
 
-        await supabaseClient.auth.signInWithPassword({
+    document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function(event) {
 
-            email: email,
+            event.preventDefault();
 
-            password: password
+            const email =
+                document
+                    .getElementById("email")
+                    .value
+                    .trim();
+
+            const password =
+                document
+                    .getElementById("password")
+                    .value;
+
+            const loginError =
+                document.getElementById("loginError");
+
+            loginError.textContent = "";
+
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+            if (error) {
+
+                loginError.textContent =
+                    error.message;
+
+                return;
+            }
+
+            showApp(data.user);
+
+            await loadDashboard();
 
         });
 
 
-    if (error) {
+    /* =========================================================
+       AUTH CHECK
+    ========================================================= */
 
-        console.error(
-            "Login error:",
+    async function checkAuth() {
+
+        const {
+            data: {
+                session
+            }
+        } =
+            await supabaseClient.auth.getSession();
+
+
+        if (session && session.user) {
+
+            showApp(session.user);
+
+            await loadDashboard();
+
+        } else {
+
+            showLogin();
+
+        }
+
+    }
+
+
+    function showLogin() {
+
+        document
+            .getElementById("loginScreen")
+            .style.display = "flex";
+
+        document
+            .getElementById("app")
+            .style.display = "none";
+
+    }
+
+
+    function showApp(user) {
+
+        document
+            .getElementById("loginScreen")
+            .style.display = "none";
+
+        document
+            .getElementById("app")
+            .style.display = "block";
+
+        document
+            .getElementById("userEmail")
+            .textContent =
+            user?.email || "";
+
+    }
+
+
+    /* =========================================================
+       LOGOUT
+    ========================================================= */
+
+    document
+        .getElementById("logoutBtn")
+        .addEventListener("click", async function() {
+
+            await supabaseClient.auth.signOut();
+
+            showLogin();
+
+        });
+
+
+    /* =========================================================
+       LOAD DASHBOARD
+    ========================================================= */
+
+    async function loadDashboard() {
+
+        try {
+
+            await loadRestaurants();
+
+            await loadVisits();
+
+            renderDashboard();
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "There was a problem loading the dashboard.\n\n" +
+                error.message
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       LOAD RESTAURANTS
+    ========================================================= */
+
+    async function loadRestaurants() {
+
+        const {
+            data,
             error
-        );
-
-
-        message.textContent =
-            error.message;
-
-
-        return;
-
-    }
-
-
-    message.textContent = "";
-
-
-    showDashboard();
-
-}
-
-
-
-// =====================================================
-// LOGOUT
-// =====================================================
-
-async function logout() {
-
-
-    await supabaseClient.auth.signOut();
-
-
-    document.getElementById(
-        "dashboard"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "loginScreen"
-    ).style.display =
-        "block";
-
-}
-
-
-
-// =====================================================
-// CHECK LOGIN
-// =====================================================
-
-async function checkLogin() {
-
-
-    const { data } =
-        await supabaseClient.auth.getUser();
-
-
-    if (data && data.user) {
-
-        showDashboard();
-
-    }
-
-}
-
-
-
-// =====================================================
-// SHOW DASHBOARD
-// =====================================================
-
-async function showDashboard() {
-
-
-    document.getElementById(
-        "loginScreen"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "dashboard"
-    ).style.display =
-        "block";
-
-
-    await loadDashboard();
-
-}
-
-
-
-// =====================================================
-// LOAD DASHBOARD
-// =====================================================
-
-async function loadDashboard() {
-
-
-    await loadRestaurants();
-
-    await loadVisits();
-
-    renderRestaurants();
-
-    renderStats();
-
-}
-
-
-
-// =====================================================
-// LOAD RESTAURANTS
-// =====================================================
-
-async function loadRestaurants() {
-
-
-    const { data, error } =
-
-        await supabaseClient
-
-            .from("restaurants")
-
-            .select(
-                "id, name, location, wifi_name, wifi_password, public_token, created_at"
-            )
-
-            .order(
-                "name",
-                {
+        } =
+            await supabaseClient
+                .from("restaurants")
+                .select(`
+                    id,
+                    name,
+                    location,
+                    wifi_name,
+                    wifi_password,
+                    public_token,
+                    contact_name,
+                    contact_position,
+                    contact_cell,
+                    contact_notes,
+                    created_at
+                `)
+                .order("name", {
                     ascending: true
-                }
-            );
+                });
 
 
-    if (error) {
+        if (error) {
 
-        console.error(
-            "Restaurant loading error:",
-            error
-        );
+            throw error;
 
-
-        document.getElementById(
-            "restaurantList"
-        ).innerHTML =
-
-            `<div class="empty">
-                Could not load restaurants.<br><br>
-                ${escapeHTML(error.message)}
-            </div>`;
+        }
 
 
-        return;
+        restaurants = data || [];
 
     }
 
 
-    restaurantData =
-        data || [];
+    /* =========================================================
+       LOAD VISITS
+       
+       We load in pages so the dashboard is not dependent
+       on the default 1,000-row response limit.
+    ========================================================= */
 
-}
+    async function loadVisits() {
 
+        visits = [];
 
+        const pageSize = 1000;
 
-// =====================================================
-// LOAD VISITS
-// =====================================================
+        let from = 0;
 
-async function loadVisits() {
+        while (true) {
 
-
-    const { data, error } =
-
-        await supabaseClient
-
-            .from("visits")
-
-            .select(
-                "id, restaurant_id, visited_at"
-            )
-
-            .order(
-                "visited_at",
-                {
-                    ascending: false
-                }
-            )
-
-            .range(
-                0,
-                9999
-            );
+            const to =
+                from + pageSize - 1;
 
 
-    if (error) {
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("visits")
+                    .select(
+                        "id, restaurant_id, visited_at"
+                    )
+                    .order("visited_at", {
+                        ascending: false
+                    })
+                    .range(from, to);
 
-        console.error(
-            "Visit loading error:",
-            error
-        );
+
+            if (error) {
+
+                throw error;
+
+            }
 
 
-        visitData = [];
+            if (!data || data.length === 0) {
 
-        return;
+                break;
+
+            }
+
+
+            visits.push(...data);
+
+
+            if (data.length < pageSize) {
+
+                break;
+
+            }
+
+
+            from += pageSize;
+
+
+            /*
+             * Safety limit for this browser dashboard.
+             * We can move analytics to database RPCs later
+             * when GuestConnect becomes much larger.
+             */
+
+            if (visits.length >= 100000) {
+
+                break;
+
+            }
+
+        }
 
     }
 
 
-    visitData =
-        data || [];
+    /* =========================================================
+       DATE HELPERS
+    ========================================================= */
 
-}
+    function startOfToday() {
 
+        const d = new Date();
 
+        d.setHours(0, 0, 0, 0);
 
-// =====================================================
-// DATE HELPERS
-// =====================================================
+        return d;
 
-function startOfToday() {
-
-
-    const d =
-        new Date();
+    }
 
 
-    d.setHours(
-        0,
-        0,
-        0,
-        0
-    );
+    function startOfDaysAgo(days) {
 
+        const d = new Date();
 
-    return d;
+        d.setHours(0, 0, 0, 0);
 
-}
-
-
-
-function startOfSevenDays() {
-
-
-    const d =
-        new Date();
-
-
-    d.setDate(
-        d.getDate() - 6
-    );
-
-
-    d.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-
-    return d;
-
-}
-
-
-
-function startOfThirtyDays() {
-
-
-    const d =
-        new Date();
-
-
-    d.setDate(
-        d.getDate() - 29
-    );
-
-
-    d.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-
-    return d;
-
-}
-
-
-
-function startOfYear() {
-
-
-    const d =
-        new Date(
-            new Date().getFullYear(),
-            0,
-            1
+        d.setDate(
+            d.getDate() - days
         );
 
+        return d;
 
-    return d;
+    }
 
-}
 
+    function startOfYear() {
 
+        const d = new Date();
 
-// =====================================================
-// RENDER STATS
-// =====================================================
+        d.setMonth(0, 1);
 
-function renderStats() {
+        d.setHours(0, 0, 0, 0);
 
+        return d;
 
-    const today =
-        startOfToday();
+    }
 
 
-    const seven =
-        startOfSevenDays();
+    function visitDate(visit) {
 
+        return new Date(
+            visit.visited_at
+        );
 
-    const thirty =
-        startOfThirtyDays();
+    }
 
 
-    const year =
-        startOfYear();
+    function countVisitsSince(date) {
 
+        return visits.filter(function(visit) {
 
-    let todayCount = 0;
+            return visitDate(visit) >= date;
 
-    let sevenCount = 0;
+        }).length;
 
-    let thirtyCount = 0;
+    }
 
-    let yearCount = 0;
 
+    function countRestaurantVisitsSince(
+        restaurantId,
+        date
+    ) {
 
-    visitData.forEach(
-        function(visit) {
-
-
-            const date =
-                new Date(
-                    visit.visited_at
-                );
-
-
-            if (date >= today) {
-
-                todayCount++;
-
-            }
-
-
-            if (date >= seven) {
-
-                sevenCount++;
-
-            }
-
-
-            if (date >= thirty) {
-
-                thirtyCount++;
-
-            }
-
-
-            if (date >= year) {
-
-                yearCount++;
-
-            }
-
-        }
-    );
-
-
-    document.getElementById(
-        "todayCount"
-    ).textContent =
-        todayCount;
-
-
-    document.getElementById(
-        "sevenDayCount"
-    ).textContent =
-        sevenCount;
-
-
-    document.getElementById(
-        "thirtyDayCount"
-    ).textContent =
-        thirtyCount;
-
-
-    document.getElementById(
-        "yearCount"
-    ).textContent =
-        yearCount;
-
-
-    document.getElementById(
-        "allTimeCount"
-    ).textContent =
-        visitData.length;
-
-}
-
-
-
-// =====================================================
-// RESTAURANT VISIT COUNT
-// =====================================================
-
-function getRestaurantVisits(id) {
-
-
-    return visitData.filter(
-
-        function(visit) {
-
-            return visit.restaurant_id === id;
-
-        }
-
-    );
-
-}
-
-
-
-// =====================================================
-// TODAY VISITS
-// =====================================================
-
-function getTodayRestaurantVisits(id) {
-
-
-    const today =
-        startOfToday();
-
-
-    return visitData.filter(
-
-        function(visit) {
+        return visits.filter(function(visit) {
 
             return (
-
-                visit.restaurant_id === id &&
-
-                new Date(
-                    visit.visited_at
-                ) >= today
-
+                visit.restaurant_id === restaurantId &&
+                visitDate(visit) >= date
             );
+
+        }).length;
+
+    }
+
+
+    function countRestaurantAllTime(
+        restaurantId
+    ) {
+
+        return visits.filter(function(visit) {
+
+            return (
+                visit.restaurant_id === restaurantId
+            );
+
+        }).length;
+
+    }
+
+
+    /* =========================================================
+       DASHBOARD RENDER
+    ========================================================= */
+
+    function renderDashboard() {
+
+        renderOverallStats();
+
+        renderAnalyticsSummary();
+
+        renderOverallChart();
+
+        renderRanking();
+
+        renderRestaurants();
+
+    }
+
+
+    /* =========================================================
+       OVERALL STATS
+    ========================================================= */
+
+    function renderOverallStats() {
+
+        document
+            .getElementById("statToday")
+            .textContent =
+            countVisitsSince(
+                startOfToday()
+            );
+
+
+        document
+            .getElementById("stat7Days")
+            .textContent =
+            countVisitsSince(
+                startOfDaysAgo(6)
+            );
+
+
+        document
+            .getElementById("stat30Days")
+            .textContent =
+            countVisitsSince(
+                startOfDaysAgo(29)
+            );
+
+
+        document
+            .getElementById("statYear")
+            .textContent =
+            countVisitsSince(
+                startOfYear()
+            );
+
+
+        document
+            .getElementById("statAllTime")
+            .textContent =
+            visits.length;
+
+    }
+
+
+    /* =========================================================
+       ANALYTICS SUMMARY
+    ========================================================= */
+
+    function renderAnalyticsSummary() {
+
+        const today =
+            startOfToday();
+
+
+        const activeRestaurants =
+            restaurants.filter(function(restaurant) {
+
+                return countRestaurantVisitsSince(
+                    restaurant.id,
+                    today
+                ) > 0;
+
+            }).length;
+
+
+        const inactiveRestaurants =
+            restaurants.length -
+            activeRestaurants;
+
+
+        const todayVisits =
+            countVisitsSince(today);
+
+
+        const average =
+            restaurants.length > 0
+                ? todayVisits / restaurants.length
+                : 0;
+
+
+        document
+            .getElementById("analyticsRestaurants")
+            .textContent =
+            restaurants.length;
+
+
+        document
+            .getElementById("analyticsActiveRestaurants")
+            .textContent =
+            activeRestaurants;
+
+
+        document
+            .getElementById("analyticsInactiveRestaurants")
+            .textContent =
+            inactiveRestaurants;
+
+
+        document
+            .getElementById("analyticsAverage")
+            .textContent =
+            average.toFixed(1);
+
+    }
+
+
+    /* =========================================================
+       OVERALL CHART
+    ========================================================= */
+
+    document
+        .getElementById("overallChartPeriod")
+        .addEventListener("change", function() {
+
+            renderOverallChart();
+
+        });
+
+
+    function renderOverallChart() {
+
+        const period =
+            document
+                .getElementById("overallChartPeriod")
+                .value;
+
+
+        const labels = [];
+        const values = [];
+
+
+        if (period === "12") {
+
+            for (
+                let i = 11;
+                i >= 0;
+                i--
+            ) {
+
+                const d = new Date();
+
+                d.setDate(1);
+
+                d.setHours(0, 0, 0, 0);
+
+                d.setMonth(
+                    d.getMonth() - i
+                );
+
+
+                const year =
+                    d.getFullYear();
+
+                const month =
+                    d.getMonth();
+
+
+                labels.push(
+                    d.toLocaleDateString(
+                        undefined,
+                        {
+                            month: "short",
+                            year: "numeric"
+                        }
+                    )
+                );
+
+
+                let count = 0;
+
+
+                visits.forEach(function(visit) {
+
+                    const vd =
+                        visitDate(visit);
+
+
+                    if (
+                        vd.getFullYear() === year &&
+                        vd.getMonth() === month
+                    ) {
+
+                        count++;
+
+                    }
+
+                });
+
+
+                values.push(count);
+
+            }
+
+        } else {
+
+            const days =
+                Number(period);
+
+
+            for (
+                let i = days - 1;
+                i >= 0;
+                i--
+            ) {
+
+                const d = new Date();
+
+                d.setHours(0, 0, 0, 0);
+
+                d.setDate(
+                    d.getDate() - i
+                );
+
+
+                const next =
+                    new Date(d);
+
+                next.setDate(
+                    next.getDate() + 1
+                );
+
+
+                labels.push(
+                    d.toLocaleDateString(
+                        undefined,
+                        {
+                            day: "2-digit",
+                            month: "short"
+                        }
+                    )
+                );
+
+
+                const count =
+                    visits.filter(function(visit) {
+
+                        const vd =
+                            visitDate(visit);
+
+                        return (
+                            vd >= d &&
+                            vd < next
+                        );
+
+                    }).length;
+
+
+                values.push(count);
+
+            }
 
         }
 
-    );
 
-}
+        if (overallChart) {
 
+            overallChart.destroy();
 
-
-// =====================================================
-// RENDER RESTAURANTS
-// =====================================================
-
-function renderRestaurants() {
+        }
 
 
-    const container =
-        document.getElementById(
-            "restaurantList"
-        );
+        const ctx =
+            document
+                .getElementById("overallChart")
+                .getContext("2d");
 
 
-    if (
-        !restaurantData ||
-        restaurantData.length === 0
-    ) {
+        overallChart =
+            new Chart(
+                ctx,
+                {
+                    type: "line",
+
+                    data: {
+                        labels: labels,
+
+                        datasets: [
+                            {
+                                label: "GuestConnect Visits",
+
+                                data: values,
+
+                                borderWidth: 3,
+
+                                tension: 0.35,
+
+                                fill: true,
+
+                                pointRadius: 3
+                            }
+                        ]
+                    },
+
+                    options: {
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+
+    }
+
+
+    /* =========================================================
+       RANKING
+    ========================================================= */
+
+    document
+        .getElementById("rankingPeriod")
+        .addEventListener("change", function() {
+
+            renderRanking();
+
+        });
+
+
+    function renderRanking() {
+
+        const period =
+            document
+                .getElementById("rankingPeriod")
+                .value;
+
+
+        const today =
+            startOfToday();
+
+
+        const sorted =
+            restaurants.map(function(restaurant) {
+
+                let count = 0;
+
+
+                if (period === "today") {
+
+                    count =
+                        countRestaurantVisitsSince(
+                            restaurant.id,
+                            today
+                        );
+
+                } else if (period === "7") {
+
+                    count =
+                        countRestaurantVisitsSince(
+                            restaurant.id,
+                            startOfDaysAgo(6)
+                        );
+
+                } else if (period === "30") {
+
+                    count =
+                        countRestaurantVisitsSince(
+                            restaurant.id,
+                            startOfDaysAgo(29)
+                        );
+
+                } else if (period === "year") {
+
+                    count =
+                        countRestaurantVisitsSince(
+                            restaurant.id,
+                            startOfYear()
+                        );
+
+                } else {
+
+                    count =
+                        countRestaurantAllTime(
+                            restaurant.id
+                        );
+
+                }
+
+
+                return {
+                    restaurant: restaurant,
+                    count: count
+                };
+
+            }).sort(function(a, b) {
+
+                return b.count - a.count;
+
+            });
+
+
+        const container =
+            document.getElementById(
+                "rankingContainer"
+            );
+
+
+        if (sorted.length === 0) {
+
+            container.innerHTML =
+                '<div class="empty">No restaurants yet.</div>';
+
+            return;
+
+        }
+
+
+        let html = `
+
+            <div style="overflow-x:auto;">
+
+                <table class="ranking-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>Restaurant</th>
+
+                            <th>Location</th>
+
+                            <th>Visits</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+        `;
+
+
+        sorted.forEach(function(item, index) {
+
+            html += `
+
+                <tr>
+
+                    <td class="rank-number">
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ${escapeHtml(item.restaurant.name)}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${escapeHtml(item.restaurant.location)}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ${item.count}
+                        </strong>
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+
+        html += `
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        `;
+
+
+        container.innerHTML = html;
+
+    }
+
+
+    /* =========================================================
+       RESTAURANTS
+    ========================================================= */
+
+    function renderRestaurants() {
+
+        const container =
+            document.getElementById(
+                "restaurantContainer"
+            );
+
+
+        if (restaurants.length === 0) {
+
+            container.innerHTML =
+                '<div class="empty">No restaurants added yet.</div>';
+
+            return;
+
+        }
+
+
+        let html =
+            '<div class="restaurant-grid">';
+
+
+        restaurants.forEach(function(restaurant) {
+
+            const today =
+                countRestaurantVisitsSince(
+                    restaurant.id,
+                    startOfToday()
+                );
+
+
+            const seven =
+                countRestaurantVisitsSince(
+                    restaurant.id,
+                    startOfDaysAgo(6)
+                );
+
+
+            const thirty =
+                countRestaurantVisitsSince(
+                    restaurant.id,
+                    startOfDaysAgo(29)
+                );
+
+
+            const reportCount =
+                getUnresolvedReportCount(
+                    restaurant.id
+                );
+
+
+            html += `
+
+                <div class="restaurant-card">
+
+                    <div class="restaurant-top">
+
+                        <div>
+
+                            <div class="restaurant-name">
+                                ${escapeHtml(restaurant.name)}
+                            </div>
+
+                            <div class="restaurant-location">
+                                📍 ${escapeHtml(restaurant.location)}
+                            </div>
+
+                            <div class="restaurant-id">
+                                ID: ${escapeHtml(restaurant.id)}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="wifi-box">
+
+                        <div class="wifi-row">
+
+                            <div class="wifi-label">
+                                Wi-Fi
+                            </div>
+
+                            <div class="wifi-value">
+                                ${escapeHtml(restaurant.wifi_name)}
+                            </div>
+
+                        </div>
+
+
+                        <div class="wifi-row">
+
+                            <div class="wifi-label">
+                                Password
+                            </div>
+
+                            <div class="wifi-value">
+                                ${escapeHtml(restaurant.wifi_password)}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="contact-box">
+
+                        <div class="contact-title">
+                            RESTAURANT CONTACT
+                        </div>
+
+                        ${
+                            restaurant.contact_name ||
+                            restaurant.contact_position ||
+                            restaurant.contact_cell ||
+                            restaurant.contact_notes
+                            ?
+
+                            `
+
+                            ${
+                                restaurant.contact_name
+                                ?
+
+                                `
+                                <div class="contact-row">
+                                    <div class="contact-label">
+                                        Contact
+                                    </div>
+
+                                    <div class="contact-value">
+                                        ${escapeHtml(restaurant.contact_name)}
+                                    </div>
+                                </div>
+                                `
+
+                                : ""
+                            }
+
+
+                            ${
+                                restaurant.contact_position
+                                ?
+
+                                `
+                                <div class="contact-row">
+                                    <div class="contact-label">
+                                        Position
+                                    </div>
+
+                                    <div class="contact-value">
+                                        ${escapeHtml(restaurant.contact_position)}
+                                    </div>
+                                </div>
+                                `
+
+                                : ""
+                            }
+
+
+                            ${
+                                restaurant.contact_cell
+                                ?
+
+                                `
+                                <div class="contact-row">
+                                    <div class="contact-label">
+                                        Cell
+                                    </div>
+
+                                    <div class="contact-value">
+                                        ${escapeHtml(restaurant.contact_cell)}
+                                    </div>
+                                </div>
+                                `
+
+                                : ""
+                            }
+
+
+                            ${
+                                restaurant.contact_notes
+                                ?
+
+                                `
+                                <div class="contact-row">
+                                    <div class="contact-label">
+                                        Notes
+                                    </div>
+
+                                    <div class="contact-value">
+                                        ${escapeHtml(restaurant.contact_notes)}
+                                    </div>
+                                </div>
+                                `
+
+                                : ""
+                            }
+
+                            `
+
+                            :
+
+                            `
+                            <div class="no-contact">
+                                No contact details added yet.
+                            </div>
+                            `
+
+                        }
+
+                    </div>
+
+
+                    <div class="restaurant-stats">
+
+                        <div class="mini-stat">
+
+                            <div class="mini-stat-label">
+                                TODAY
+                            </div>
+
+                            <div class="mini-stat-value">
+                                ${today}
+                            </div>
+
+                        </div>
+
+
+                        <div class="mini-stat">
+
+                            <div class="mini-stat-label">
+                                7 DAYS
+                            </div>
+
+                            <div class="mini-stat-value">
+                                ${seven}
+                            </div>
+
+                        </div>
+
+
+                        <div class="mini-stat">
+
+                            <div class="mini-stat-label">
+                                30 DAYS
+                            </div>
+
+                            <div class="mini-stat-value">
+                                ${thirty}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    ${
+                        reportCount > 0
+
+                        ?
+
+                        `
+                        <div class="report-warning">
+
+                            ⚠️ ${reportCount}
+                            unresolved Wi-Fi
+                            ${reportCount === 1 ? "report" : "reports"}
+
+                        </div>
+                        `
+
+                        :
+
+                        `
+                        <div class="report-ok">
+
+                            ✓ No unresolved Wi-Fi reports
+
+                        </div>
+                        `
+
+                    }
+
+
+                    <div class="card-actions">
+
+                        <button
+                            class="btn btn-secondary"
+                            onclick="editRestaurant('${restaurant.id}')"
+                        >
+                            Edit
+                        </button>
+
+
+                        <button
+                            class="btn btn-dark"
+                            onclick="openCustomerPage('${restaurant.public_token}')"
+                        >
+                            Open
+                        </button>
+
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="showQr('${restaurant.id}')"
+                        >
+                            QR
+                        </button>
+
+
+                        <button
+                            class="btn btn-warning"
+                            onclick="showReports('${restaurant.id}')"
+                        >
+                            Reports
+                        </button>
+
+
+                        <button
+                            class="btn btn-success"
+                            onclick="showRestaurantAnalytics('${restaurant.id}')"
+                        >
+                            Analytics
+                        </button>
+
+
+                        <button
+                            class="btn btn-danger"
+                            onclick="deleteRestaurant('${restaurant.id}')"
+                        >
+                            Delete
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        });
+
+
+        html +=
+            "</div>";
+
 
         container.innerHTML =
-
-            `<div class="empty">
-                No restaurants have been added yet.
-            </div>`;
-
-        return;
+            html;
 
     }
 
 
-    container.innerHTML = "";
+    /* =========================================================
+       ADD RESTAURANT
+    ========================================================= */
 
+    document
+        .getElementById("addRestaurantBtn")
+        .addEventListener("click", function() {
 
-    restaurantData.forEach(
+            document
+                .getElementById("restaurantModalTitle")
+                .textContent =
+                "Add Restaurant";
 
-        function(restaurant) {
 
+            document
+                .getElementById("restaurantForm")
+                .reset();
 
-            const visits =
-                getRestaurantVisits(
-                    restaurant.id
-                );
 
+            document
+                .getElementById("restaurantEditId")
+                .value = "";
 
-            const todayVisits =
-                getTodayRestaurantVisits(
-                    restaurant.id
-                );
 
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "restaurant-card";
-
-
-            let warning = "";
-
-
-            if (todayVisits.length === 0) {
-
-                warning =
-
-                    `<div class="today-warning">
-                        No visits today
-                    </div>`;
-
-            }
-
-
-            card.innerHTML =
-
-                `
-                <div class="restaurant-header">
-
-                    <div>
-
-                        <div class="restaurant-name">
-                            ${escapeHTML(restaurant.name)}
-                        </div>
-
-                        <div class="restaurant-location">
-                            ${escapeHTML(restaurant.location)}
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        <div class="visit-number">
-                            ${visits.length}
-                        </div>
-
-                        <div class="visit-label">
-                            Total Visits
-                        </div>
-
-                        ${warning}
-
-                    </div>
-
-                </div>
-
-
-                <div class="restaurant-details">
-
-
-                    <div class="detail-row">
-
-                        <div class="detail-label">
-                            Restaurant ID
-                        </div>
-
-                        <div class="detail-value">
-                            ${escapeHTML(restaurant.id)}
-                        </div>
-
-                    </div>
-
-
-                    <div class="detail-row">
-
-                        <div class="detail-label">
-                            Wi-Fi Name
-                        </div>
-
-                        <div class="detail-value">
-                            ${escapeHTML(restaurant.wifi_name)}
-                        </div>
-
-                    </div>
-
-
-                    <div class="detail-row">
-
-                        <div class="detail-label">
-                            Wi-Fi Password
-                        </div>
-
-                        <div class="detail-value">
-                            ${escapeHTML(restaurant.wifi_password)}
-                        </div>
-
-                    </div>
-
-
-                </div>
-
-
-                <div class="actions">
-
-
-                    <button
-                        class="action-button open-button"
-                        onclick="openCustomerPage('${restaurant.public_token}')">
-
-                        Open Customer Page
-
-                    </button>
-
-
-                    <button
-                        class="action-button qr-button"
-                        onclick="showQR('${restaurant.id}')">
-
-                        Generate QR
-
-                    </button>
-
-
-                    <button
-                        class="action-button regenerate-button"
-                        onclick="regenerateQR('${restaurant.id}')">
-
-                        Regenerate QR
-
-                    </button>
-
-
-                    <button
-                        class="action-button edit-button"
-                        onclick="editRestaurant('${restaurant.id}')">
-
-                        Edit
-
-                    </button>
-
-
-                    <button
-                        class="action-button delete-button"
-                        onclick="deleteRestaurant('${restaurant.id}')">
-
-                        Delete
-
-                    </button>
-
-
-                </div>
-                `;
-
-
-            container.appendChild(
-                card
+            openModal(
+                "restaurantModal"
             );
 
-        }
-
-    );
-
-}
+        });
 
 
+    /* =========================================================
+       EDIT RESTAURANT
+    ========================================================= */
 
-// =====================================================
-// CUSTOMER URL
-// =====================================================
+    window.editRestaurant =
+        function(restaurantId) {
 
-function getCustomerUrl(publicToken) {
+            const restaurant =
+                restaurants.find(function(r) {
 
+                    return r.id === restaurantId;
 
-    const url =
-        new URL(
-            "restaurant.html",
-            window.location.href
-        );
-
-
-    url.searchParams.set(
-        "token",
-        publicToken
-    );
+                });
 
 
-    return url.href;
+            if (!restaurant) {
 
-}
+                alert("Restaurant not found.");
 
-
-
-// =====================================================
-// OPEN CUSTOMER PAGE
-// =====================================================
-
-function openCustomerPage(publicToken) {
-
-
-    if (!publicToken) {
-
-        alert(
-            "This restaurant does not have a QR token."
-        );
-
-        return;
-
-    }
-
-
-    const url =
-        getCustomerUrl(
-            publicToken
-        );
-
-
-    window.open(
-        url,
-        "_blank"
-    );
-
-}
-
-
-
-// =====================================================
-// SHOW QR
-// =====================================================
-
-function showQR(id) {
-
-
-    const restaurant =
-        restaurantData.find(
-
-            function(item) {
-
-                return item.id === id;
+                return;
 
             }
 
-        );
 
+            document
+                .getElementById("restaurantModalTitle")
+                .textContent =
+                "Edit Restaurant";
 
-    if (!restaurant) {
 
-        return;
+            document
+                .getElementById("restaurantEditId")
+                .value =
+                restaurant.id;
 
-    }
 
+            document
+                .getElementById("restaurantName")
+                .value =
+                restaurant.name || "";
 
-    if (!restaurant.public_token) {
 
-        alert(
-            "This restaurant does not have a QR token yet."
-        );
+            document
+                .getElementById("restaurantLocation")
+                .value =
+                restaurant.location || "";
 
-        return;
 
-    }
+            document
+                .getElementById("wifiName")
+                .value =
+                restaurant.wifi_name || "";
 
 
-    currentQRRestaurant =
-        restaurant;
+            document
+                .getElementById("wifiPassword")
+                .value =
+                restaurant.wifi_password || "";
 
 
-    const url =
-        getCustomerUrl(
-            restaurant.public_token
-        );
+            document
+                .getElementById("contactName")
+                .value =
+                restaurant.contact_name || "";
 
 
-    document.getElementById(
-        "qrTitle"
-    ).textContent =
+            document
+                .getElementById("contactPosition")
+                .value =
+                restaurant.contact_position || "";
 
-        restaurant.name +
-        " - " +
-        restaurant.location;
 
+            document
+                .getElementById("contactCell")
+                .value =
+                restaurant.contact_cell || "";
 
-    document.getElementById(
-        "qrUrl"
-    ).textContent =
-        url;
 
+            document
+                .getElementById("contactNotes")
+                .value =
+                restaurant.contact_notes || "";
 
-    document.getElementById(
-        "qrcode"
-    ).innerHTML = "";
 
+            openModal(
+                "restaurantModal"
+            );
 
-    new QRCode(
+        };
 
-        document.getElementById(
-            "qrcode"
-        ),
 
-        {
-            text: url,
+    /* =========================================================
+       SAVE RESTAURANT
+    ========================================================= */
 
-            width: 240,
+    document
+        .getElementById("restaurantForm")
+        .addEventListener("submit", async function(event) {
 
-            height: 240
+            event.preventDefault();
 
-        }
 
-    );
+            const editId =
+                document
+                    .getElementById("restaurantEditId")
+                    .value
+                    .trim();
 
 
-    document.getElementById(
-        "qrModal"
-    ).style.display =
-        "block";
+            const name =
+                document
+                    .getElementById("restaurantName")
+                    .value
+                    .trim();
 
-}
 
+            const location =
+                document
+                    .getElementById("restaurantLocation")
+                    .value
+                    .trim();
 
 
-// =====================================================
-// CLOSE QR
-// =====================================================
+            const wifiName =
+                document
+                    .getElementById("wifiName")
+                    .value
+                    .trim();
 
-function closeQR() {
 
+            const wifiPassword =
+                document
+                    .getElementById("wifiPassword")
+                    .value
+                    .trim();
 
-    document.getElementById(
-        "qrModal"
-    ).style.display =
-        "none";
 
+            const contactName =
+                document
+                    .getElementById("contactName")
+                    .value
+                    .trim();
 
-    document.getElementById(
-        "qrcode"
-    ).innerHTML = "";
 
+            const contactPosition =
+                document
+                    .getElementById("contactPosition")
+                    .value
+                    .trim();
 
-    currentQRRestaurant =
-        null;
 
-}
+            const contactCell =
+                document
+                    .getElementById("contactCell")
+                    .value
+                    .trim();
 
 
+            const contactNotes =
+                document
+                    .getElementById("contactNotes")
+                    .value
+                    .trim();
 
-// =====================================================
-// DOWNLOAD QR
-// =====================================================
 
-function downloadQR() {
-
-
-    if (!currentQRRestaurant) {
-
-        return;
-
-    }
-
-
-    const canvas =
-        document.querySelector(
-            "#qrcode canvas"
-        );
-
-
-    if (!canvas) {
-
-        alert(
-            "QR code is not ready yet."
-        );
-
-        return;
-
-    }
-
-
-    const link =
-        document.createElement(
-            "a"
-        );
-
-
-    link.download =
-
-        currentQRRestaurant.name
-            .replace(
-                /[^a-z0-9]/gi,
-                "-"
-            ) +
-
-        "-" +
-
-        currentQRRestaurant.location
-            .replace(
-                /[^a-z0-9]/gi,
-                "-"
-            ) +
-
-        "-GuestConnect-QR.png";
-
-
-    link.href =
-        canvas.toDataURL(
-            "image/png"
-        );
-
-
-    link.click();
-
-}
-
-
-
-// =====================================================
-// ADD RESTAURANT
-// =====================================================
-
-async function addRestaurant() {
-
-
-    const name =
-        document.getElementById(
-            "newName"
-        ).value.trim();
-
-
-    const location =
-        document.getElementById(
-            "newLocation"
-        ).value.trim();
-
-
-    const id =
-        document.getElementById(
-            "newID"
-        ).value.trim();
-
-
-    const wifiName =
-        document.getElementById(
-            "newWifiName"
-        ).value.trim();
-
-
-    const wifiPassword =
-        document.getElementById(
-            "newWifiPassword"
-        ).value.trim();
-
-
-    const message =
-        document.getElementById(
-            "addMessage"
-        );
-
-
-    message.textContent = "";
-
-
-    if (
-        !name ||
-        !location ||
-        !id ||
-        !wifiName ||
-        !wifiPassword
-    ) {
-
-        message.textContent =
-            "Please fill in all fields.";
-
-        return;
-
-    }
-
-
-    const publicToken =
-        crypto.randomUUID();
-
-
-    const { error } =
-
-        await supabaseClient
-
-            .from("restaurants")
-
-            .insert({
-
-                id: id,
+            const values = {
 
                 name: name,
 
@@ -2221,425 +3057,1324 @@ async function addRestaurant() {
 
                 wifi_password: wifiPassword,
 
-                public_token: publicToken
+                contact_name:
+                    contactName || null,
 
-            });
+                contact_position:
+                    contactPosition || null,
+
+                contact_cell:
+                    contactCell || null,
+
+                contact_notes:
+                    contactNotes || null
+
+            };
 
 
-    if (error) {
+            let error = null;
 
-        console.error(
-            "Add restaurant error:",
+
+            if (editId) {
+
+                const result =
+                    await supabaseClient
+                        .from("restaurants")
+                        .update(values)
+                        .eq("id", editId);
+
+
+                error =
+                    result.error;
+
+            } else {
+
+                values.id =
+                    createRestaurantId(
+                        name,
+                        location
+                    );
+
+
+                values.public_token =
+                    crypto.randomUUID();
+
+
+                const result =
+                    await supabaseClient
+                        .from("restaurants")
+                        .insert(values);
+
+
+                error =
+                    result.error;
+
+            }
+
+
+            if (error) {
+
+                alert(
+                    "Could not save restaurant.\n\n" +
+                    error.message
+                );
+
+                return;
+
+            }
+
+
+            closeModal(
+                "restaurantModal"
+            );
+
+
+            await loadDashboard();
+
+        });
+
+
+    /* =========================================================
+       CREATE RESTAURANT ID
+    ========================================================= */
+
+    function createRestaurantId(
+        name,
+        location
+    ) {
+
+        const combined =
+            name + "-" + location;
+
+
+        return combined
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+
+    }
+
+
+    /* =========================================================
+       DELETE RESTAURANT
+    ========================================================= */
+
+    window.deleteRestaurant =
+        async function(restaurantId) {
+
+            const restaurant =
+                restaurants.find(function(r) {
+
+                    return r.id === restaurantId;
+
+                });
+
+
+            if (!restaurant) {
+
+                return;
+
+            }
+
+
+            const confirmed =
+                confirm(
+                    "Delete " +
+                    restaurant.name +
+                    " — " +
+                    restaurant.location +
+                    "?\n\n" +
+                    "This will also delete its recorded visits."
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("restaurants")
+                    .delete()
+                    .eq("id", restaurantId);
+
+
+            if (error) {
+
+                alert(
+                    "Could not delete restaurant.\n\n" +
+                    error.message
+                );
+
+                return;
+
+            }
+
+
+            await loadDashboard();
+
+        };
+
+
+    /* =========================================================
+       OPEN CUSTOMER PAGE
+    ========================================================= */
+
+    window.openCustomerPage =
+        function(publicToken) {
+
+            if (!publicToken) {
+
+                alert(
+                    "This restaurant does not have a public token."
+                );
+
+                return;
+
+            }
+
+
+            const url =
+                getCustomerUrl(
+                    publicToken
+                );
+
+
+            window.open(
+                url,
+                "_blank"
+            );
+
+        };
+
+
+    function getCustomerUrl(
+        publicToken
+    ) {
+
+        const url =
+            new URL(
+                "restaurant.html",
+                window.location.href
+            );
+
+
+        url.searchParams.set(
+            "token",
+            publicToken
+        );
+
+
+        return url.href;
+
+    }
+
+
+    /* =========================================================
+       QR CODE
+    ========================================================= */
+
+    window.showQr =
+        function(restaurantId) {
+
+            const restaurant =
+                restaurants.find(function(r) {
+
+                    return r.id === restaurantId;
+
+                });
+
+
+            if (!restaurant) {
+
+                alert("Restaurant not found.");
+
+                return;
+
+            }
+
+
+            if (!restaurant.public_token) {
+
+                alert(
+                    "This restaurant does not have a public token."
+                );
+
+                return;
+
+            }
+
+
+            currentQrRestaurant =
+                restaurant;
+
+
+            const url =
+                getCustomerUrl(
+                    restaurant.public_token
+                );
+
+
+            document
+                .getElementById("qrTitle")
+                .textContent =
+                restaurant.name +
+                " — " +
+                restaurant.location;
+
+
+            document
+                .getElementById("qrUrl")
+                .textContent =
+                url;
+
+
+            const qrContainer =
+                document.getElementById(
+                    "qrCode"
+                );
+
+
+            qrContainer.innerHTML = "";
+
+
+            new QRCode(
+                qrContainer,
+                {
+                    text: url,
+                    width: 260,
+                    height: 260,
+                    correctLevel:
+                        QRCode.CorrectLevel.H
+                }
+            );
+
+
+            openModal(
+                "qrModal"
+            );
+
+        };
+
+
+    /* =========================================================
+       DOWNLOAD QR
+    ========================================================= */
+
+    document
+        .getElementById("downloadQrBtn")
+        .addEventListener("click", function() {
+
+            if (!currentQrRestaurant) {
+
+                return;
+
+            }
+
+
+            const qrContainer =
+                document.getElementById(
+                    "qrCode"
+                );
+
+
+            const canvas =
+                qrContainer.querySelector(
+                    "canvas"
+                );
+
+
+            const image =
+                qrContainer.querySelector(
+                    "img"
+                );
+
+
+            let dataUrl = null;
+
+
+            if (canvas) {
+
+                dataUrl =
+                    canvas.toDataURL(
+                        "image/png"
+                    );
+
+            } else if (image) {
+
+                dataUrl =
+                    image.src;
+
+            }
+
+
+            if (!dataUrl) {
+
+                alert(
+                    "Could not create QR image."
+                );
+
+                return;
+
+            }
+
+
+            const link =
+                document.createElement("a");
+
+
+            link.href =
+                dataUrl;
+
+
+            link.download =
+                currentQrRestaurant.name
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-") +
+                "-guestconnect-qr.png";
+
+
+            document
+                .body
+                .appendChild(link);
+
+
+            link.click();
+
+
+            link.remove();
+
+        });
+
+
+    /* =========================================================
+       REGENERATE QR TOKEN
+       
+       We put this function on the window so it can be
+       called later if we add a regenerate button.
+    ========================================================= */
+
+    window.regenerateToken =
+        async function(restaurantId) {
+
+            const restaurant =
+                restaurants.find(function(r) {
+
+                    return r.id === restaurantId;
+
+                });
+
+
+            if (!restaurant) {
+
+                return;
+
+            }
+
+
+            const confirmed =
+                confirm(
+                    "Generate a new QR token for " +
+                    restaurant.name +
+                    "?\n\n" +
+                    "The old QR code will stop working."
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            const newToken =
+                crypto.randomUUID();
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("restaurants")
+                    .update({
+                        public_token: newToken
+                    })
+                    .eq(
+                        "id",
+                        restaurantId
+                    );
+
+
+            if (error) {
+
+                alert(
+                    "Could not regenerate token.\n\n" +
+                    error.message
+                );
+
+                return;
+
+            }
+
+
+            await loadDashboard();
+
+
+            alert(
+                "New QR token created.\n\n" +
+                "You must print/download the new QR code."
+            );
+
+        };
+
+
+    /* =========================================================
+       WI-FI REPORTS
+    ========================================================= */
+
+    let reportCache = {};
+
+
+    async function loadReports() {
+
+        const {
+            data,
             error
-        );
+        } =
+            await supabaseClient
+                .from("wifi_reports")
+                .select(
+                    "id, restaurant_id, reported_at, resolved"
+                )
+                .order(
+                    "reported_at",
+                    {
+                        ascending: false
+                    }
+                );
 
 
-        message.textContent =
-            error.message;
+        if (error) {
+
+            throw error;
+
+        }
 
 
-        return;
-
-    }
+        reportCache = {};
 
 
-    message.textContent =
-        "Restaurant added successfully.";
+        (data || []).forEach(function(report) {
 
+            if (!reportCache[report.restaurant_id]) {
 
-    document.getElementById(
-        "newName"
-    ).value = "";
-
-
-    document.getElementById(
-        "newLocation"
-    ).value = "";
-
-
-    document.getElementById(
-        "newID"
-    ).value = "";
-
-
-    document.getElementById(
-        "newWifiName"
-    ).value = "";
-
-
-    document.getElementById(
-        "newWifiPassword"
-    ).value = "";
-
-
-    await loadDashboard();
-
-}
-
-
-
-// =====================================================
-// EDIT RESTAURANT
-// =====================================================
-
-async function editRestaurant(id) {
-
-
-    const restaurant =
-        restaurantData.find(
-
-            function(item) {
-
-                return item.id === id;
+                reportCache[report.restaurant_id] = [];
 
             }
 
-        );
 
+            reportCache[
+                report.restaurant_id
+            ].push(report);
 
-    if (!restaurant) {
-
-        return;
-
-    }
-
-
-    const name =
-        prompt(
-            "Restaurant name:",
-            restaurant.name
-        );
-
-
-    if (name === null) {
-
-        return;
+        });
 
     }
 
 
-    const location =
-        prompt(
-            "Location:",
-            restaurant.location
-        );
+    function getUnresolvedReportCount(
+        restaurantId
+    ) {
+
+        const reports =
+            reportCache[
+                restaurantId
+            ] || [];
 
 
-    if (location === null) {
+        return reports.filter(function(report) {
 
-        return;
+            return !report.resolved;
 
-    }
-
-
-    const wifiName =
-        prompt(
-            "Wi-Fi name:",
-            restaurant.wifi_name
-        );
-
-
-    if (wifiName === null) {
-
-        return;
+        }).length;
 
     }
 
 
-    const wifiPassword =
-        prompt(
-            "Wi-Fi password:",
-            restaurant.wifi_password
-        );
+    window.showReports =
+        async function(restaurantId) {
+
+            const restaurant =
+                restaurants.find(function(r) {
+
+                    return r.id === restaurantId;
+
+                });
 
 
-    if (wifiPassword === null) {
+            if (!restaurant) {
 
-        return;
-
-    }
-
-
-    const { error } =
-
-        await supabaseClient
-
-            .from("restaurants")
-
-            .update({
-
-                name: name.trim(),
-
-                location: location.trim(),
-
-                wifi_name: wifiName.trim(),
-
-                wifi_password:
-                    wifiPassword.trim()
-
-            })
-
-            .eq(
-                "id",
-                id
-            );
-
-
-    if (error) {
-
-        alert(
-            "Could not update restaurant:\n\n" +
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    await loadDashboard();
-
-}
-
-
-
-// =====================================================
-// REGENERATE QR TOKEN
-// =====================================================
-
-async function regenerateQR(id) {
-
-
-    const restaurant =
-        restaurantData.find(
-
-            function(item) {
-
-                return item.id === id;
+                return;
 
             }
 
-        );
+
+            const container =
+                document.getElementById(
+                    "reportContainer"
+                );
 
 
-    if (!restaurant) {
-
-        return;
-
-    }
+            container.innerHTML =
+                '<div class="loading">Loading reports...</div>';
 
 
-    const confirmed =
-        confirm(
-
-            "Regenerate the QR code for " +
-
-            restaurant.name +
-
-            " - " +
-
-            restaurant.location +
-
-            "?\n\n" +
-
-            "The old QR code will stop working."
-
-        );
+            document
+                .getElementById("reportTitle")
+                .textContent =
+                "Wi-Fi Reports";
 
 
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    const newToken =
-        crypto.randomUUID();
+            document
+                .getElementById("reportSubtitle")
+                .textContent =
+                restaurant.name +
+                " — " +
+                restaurant.location;
 
 
-    const { error } =
-
-        await supabaseClient
-
-            .from("restaurants")
-
-            .update({
-
-                public_token:
-                    newToken
-
-            })
-
-            .eq(
-                "id",
-                id
+            openModal(
+                "reportModal"
             );
 
 
-    if (error) {
+            try {
 
-        alert(
-            "Could not regenerate QR:\n\n" +
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    alert(
-        "New QR token created successfully.\n\n" +
-        "The old QR code is now invalid."
-    );
-
-
-    await loadDashboard();
-
-}
-
-
-
-// =====================================================
-// DELETE RESTAURANT
-// =====================================================
-
-async function deleteRestaurant(id) {
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from("wifi_reports")
+                        .select(
+                            "id, restaurant_id, reported_at, resolved"
+                        )
+                        .eq(
+                            "restaurant_id",
+                            restaurantId
+                        )
+                        .order(
+                            "reported_at",
+                            {
+                                ascending: false
+                            }
+                        );
 
 
-    const restaurant =
-        restaurantData.find(
+                if (error) {
 
-            function(item) {
+                    throw error;
 
-                return item.id === id;
+                }
+
+
+                const reports =
+                    data || [];
+
+
+                if (reports.length === 0) {
+
+                    container.innerHTML = `
+
+                        <div class="empty">
+
+                            No Wi-Fi reports for this restaurant.
+
+                        </div>
+
+                    `;
+
+                    return;
+
+                }
+
+
+                let html = "";
+
+
+                reports.forEach(function(report) {
+
+                    const resolved =
+                        Boolean(
+                            report.resolved
+                        );
+
+
+                    const date =
+                        new Date(
+                            report.reported_at
+                        );
+
+
+                    html += `
+
+                        <div class="report-item">
+
+                            <div class="
+                                report-status
+                                ${
+                                    resolved
+                                    ? "status-fixed"
+                                    : "status-unresolved"
+                                }
+                            ">
+
+                                ${
+                                    resolved
+                                    ? "✓ FIXED"
+                                    : "⚠ UNRESOLVED"
+                                }
+
+                            </div>
+
+
+                            <div class="report-date">
+
+                                Reported:
+                                ${date.toLocaleString()}
+
+                            </div>
+
+
+                            <div class="report-actions">
+
+                                ${
+                                    !resolved
+
+                                    ?
+
+                                    `
+                                    <button
+                                        class="btn btn-success"
+                                        onclick="markReportFixed('${report.id}', '${restaurantId}')"
+                                    >
+                                        ✓ Mark Fixed
+                                    </button>
+                                    `
+
+                                    :
+
+                                    `
+                                    <button
+                                        class="btn btn-secondary"
+                                        disabled
+                                    >
+                                        Already Fixed
+                                    </button>
+                                    `
+
+                                }
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                });
+
+
+                container.innerHTML =
+                    html;
+
+
+            } catch (error) {
+
+                container.innerHTML = `
+
+                    <div class="error-box">
+
+                        Could not load Wi-Fi reports.
+
+                        <br><br>
+
+                        ${escapeHtml(error.message)}
+
+                    </div>
+
+                `;
 
             }
 
-        );
+        };
 
 
-    if (!restaurant) {
+    /* =========================================================
+       MARK REPORT FIXED
+    ========================================================= */
 
-        return;
+    window.markReportFixed =
+        async function(
+            reportId,
+            restaurantId
+        ) {
 
-    }
-
-
-    const confirmed =
-        confirm(
-
-            "Delete " +
-
-            restaurant.name +
-
-            " - " +
-
-            restaurant.location +
-
-            "?\n\n" +
-
-            "This will also delete its recorded visits."
-
-        );
+            const confirmed =
+                confirm(
+                    "Mark this Wi-Fi report as FIXED?"
+                );
 
 
-    if (!confirmed) {
+            if (!confirmed) {
 
-        return;
+                return;
 
-    }
+            }
 
 
-    const { error } =
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("wifi_reports")
+                    .update({
+                        resolved: true
+                    })
+                    .eq(
+                        "id",
+                        reportId
+                    );
 
-        await supabaseClient
 
-            .from("restaurants")
+            if (error) {
 
-            .delete()
+                alert(
+                    "Could not mark report as fixed.\n\n" +
+                    error.message
+                );
 
-            .eq(
-                "id",
-                id
+                return;
+
+            }
+
+
+            await showReports(
+                restaurantId
             );
 
 
-    if (error) {
+            await loadReports();
 
-        alert(
-            "Could not delete restaurant:\n\n" +
-            error.message
+
+            renderRestaurants();
+
+        };
+
+
+    /* =========================================================
+       RESTAURANT ANALYTICS
+    ========================================================= */
+
+    window.showRestaurantAnalytics =
+        function(restaurantId) {
+
+            const restaurant =
+                restaurants.find(function(r) {
+
+                    return r.id === restaurantId;
+
+                });
+
+
+            if (!restaurant) {
+
+                return;
+
+            }
+
+
+            currentAnalyticsRestaurantId =
+                restaurantId;
+
+
+            document
+                .getElementById(
+                    "restaurantAnalyticsTitle"
+                )
+                .textContent =
+                restaurant.name +
+                " Analytics";
+
+
+            document
+                .getElementById(
+                    "restaurantAnalyticsSubtitle"
+                )
+                .textContent =
+                restaurant.location;
+
+
+            document
+                .getElementById(
+                    "restaurantAnalyticsToday"
+                )
+                .textContent =
+                countRestaurantVisitsSince(
+                    restaurantId,
+                    startOfToday()
+                );
+
+
+            document
+                .getElementById(
+                    "restaurantAnalytics7"
+                )
+                .textContent =
+                countRestaurantVisitsSince(
+                    restaurantId,
+                    startOfDaysAgo(6)
+                );
+
+
+            document
+                .getElementById(
+                    "restaurantAnalytics30"
+                )
+                .textContent =
+                countRestaurantVisitsSince(
+                    restaurantId,
+                    startOfDaysAgo(29)
+                );
+
+
+            document
+                .getElementById(
+                    "restaurantAnalyticsAll"
+                )
+                .textContent =
+                countRestaurantAllTime(
+                    restaurantId
+                );
+
+
+            openModal(
+                "analyticsModal"
+            );
+
+
+            renderRestaurantChart();
+
+        };
+
+
+    document
+        .getElementById(
+            "restaurantChartPeriod"
+        )
+        .addEventListener(
+            "change",
+            function() {
+
+                renderRestaurantChart();
+
+            }
         );
 
-        return;
+
+    function renderRestaurantChart() {
+
+        if (!currentAnalyticsRestaurantId) {
+
+            return;
+
+        }
+
+
+        const period =
+            document
+                .getElementById(
+                    "restaurantChartPeriod"
+                )
+                .value;
+
+
+        const restaurantId =
+            currentAnalyticsRestaurantId;
+
+
+        const labels = [];
+        const values = [];
+
+
+        if (period === "12") {
+
+            for (
+                let i = 11;
+                i >= 0;
+                i--
+            ) {
+
+                const d = new Date();
+
+                d.setDate(1);
+
+                d.setHours(0, 0, 0, 0);
+
+                d.setMonth(
+                    d.getMonth() - i
+                );
+
+
+                const year =
+                    d.getFullYear();
+
+                const month =
+                    d.getMonth();
+
+
+                labels.push(
+                    d.toLocaleDateString(
+                        undefined,
+                        {
+                            month: "short",
+                            year: "numeric"
+                        }
+                    )
+                );
+
+
+                const count =
+                    visits.filter(function(visit) {
+
+                        const vd =
+                            visitDate(visit);
+
+
+                        return (
+                            visit.restaurant_id === restaurantId &&
+                            vd.getFullYear() === year &&
+                            vd.getMonth() === month
+                        );
+
+                    }).length;
+
+
+                values.push(count);
+
+            }
+
+        } else {
+
+            const days =
+                Number(period);
+
+
+            for (
+                let i = days - 1;
+                i >= 0;
+                i--
+            ) {
+
+                const d = new Date();
+
+                d.setHours(0, 0, 0, 0);
+
+                d.setDate(
+                    d.getDate() - i
+                );
+
+
+                const next =
+                    new Date(d);
+
+                next.setDate(
+                    next.getDate() + 1
+                );
+
+
+                labels.push(
+                    d.toLocaleDateString(
+                        undefined,
+                        {
+                            day: "2-digit",
+                            month: "short"
+                        }
+                    )
+                );
+
+
+                const count =
+                    visits.filter(function(visit) {
+
+                        const vd =
+                            visitDate(visit);
+
+
+                        return (
+                            visit.restaurant_id === restaurantId &&
+                            vd >= d &&
+                            vd < next
+                        );
+
+                    }).length;
+
+
+                values.push(count);
+
+            }
+
+        }
+
+
+        if (restaurantChart) {
+
+            restaurantChart.destroy();
+
+        }
+
+
+        const ctx =
+            document
+                .getElementById(
+                    "restaurantChart"
+                )
+                .getContext("2d");
+
+
+        restaurantChart =
+            new Chart(
+                ctx,
+                {
+                    type: "bar",
+
+                    data: {
+
+                        labels: labels,
+
+                        datasets: [
+
+                            {
+                                label:
+                                    "GuestConnect Visits",
+
+                                data:
+                                    values,
+
+                                borderWidth: 1
+                            }
+
+                        ]
+
+                    },
+
+                    options: {
+
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        plugins: {
+
+                            legend: {
+                                display: false
+                            }
+
+                        },
+
+                        scales: {
+
+                            y: {
+
+                                beginAtZero: true,
+
+                                ticks: {
+                                    precision: 0
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
 
     }
 
 
-    await loadDashboard();
+    /* =========================================================
+       MODALS
+    ========================================================= */
 
-}
+    function openModal(
+        id
+    ) {
 
+        document
+            .getElementById(id)
+            .style.display =
+            "block";
 
-
-// =====================================================
-// ESCAPE HTML
-// =====================================================
-
-function escapeHTML(value) {
-
-
-    if (value === null ||
-        value === undefined) {
-
-        return "";
+        document
+            .body
+            .style.overflow =
+            "hidden";
 
     }
 
 
-    return String(value)
+    window.closeModal =
+        function(id) {
 
-        .replace(
-            /&/g,
-            "&amp;"
-        )
+            document
+                .getElementById(id)
+                .style.display =
+                "none";
 
-        .replace(
-            /</g,
-            "&lt;"
-        )
+            document
+                .body
+                .style.overflow =
+                "";
 
-        .replace(
-            />/g,
-            "&gt;"
-        )
+        };
 
-        .replace(
-            /"/g,
-            "&quot;"
-        )
 
-        .replace(
-            /'/g,
-            "&#039;"
+    document
+        .querySelectorAll(".modal")
+        .forEach(function(modal) {
+
+            modal.addEventListener(
+                "click",
+                function(event) {
+
+                    if (
+                        event.target === modal
+                    ) {
+
+                        closeModal(
+                            modal.id
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    document
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    document
+                        .querySelectorAll(
+                            ".modal"
+                        )
+                        .forEach(
+                            function(modal) {
+
+                                modal.style.display =
+                                    "none";
+
+                            }
+                        );
+
+                    document
+                        .body
+                        .style.overflow =
+                        "";
+
+                }
+
+            }
         );
 
-}
+
+    /* =========================================================
+       ESCAPE HTML
+    ========================================================= */
+
+    function escapeHtml(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return "";
+
+        }
 
 
+        return String(value)
 
-// =====================================================
-// START
-// =====================================================
+            .replace(
+                /&/g,
+                "&amp;"
+            )
 
-checkLogin();
+            .replace(
+                /</g,
+                "&lt;"
+            )
 
+            .replace(
+                />/g,
+                "&gt;"
+            )
+
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    /* =========================================================
+       START
+    ========================================================= */
+
+    (async function() {
+
+        try {
+
+            await loadReports();
+
+        } catch (error) {
+
+            console.warn(
+                "Could not preload Wi-Fi reports:",
+                error.message
+            );
+
+        }
+
+
+        await checkAuth();
+
+    })();
 
 </script>
 
-
 </body>
-
 </html>
